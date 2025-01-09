@@ -50,6 +50,8 @@ const ViewStudentReportSheet = () => {
     );
   });
 
+  console.log(filteredMarksDetails)
+
   const [suggestions, setSuggestions] = useState([]); // To store user suggestions
   const [showSuggestions, setShowSuggestions] = useState(false);
   const { setLoading } = useLoading();
@@ -120,6 +122,7 @@ const ViewStudentReportSheet = () => {
     }
 
 
+
     try {
       const queryParams = new URLSearchParams({
         searchQuery: formData.studentNameOrId,
@@ -162,6 +165,54 @@ const ViewStudentReportSheet = () => {
       console.error('Error:', error);
       setLoading(false);
       toast.error('An error occurred');
+    }
+  };
+
+  const handleDownloadButton = async (e, query) => {
+    e.preventDefault();
+    console.log('Query passed to handleDownloadButton:', query);
+    if (!query) {
+      alert('Search query is required.');
+      return;
+    }
+
+    if (!details.name || filteredMarksDetails.length === 0) {
+      alert('No data available to generate the report.');
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    const searchQuery = encodeURIComponent(query);
+    console.log('Encoded Search Query:', searchQuery);
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/reports/student-report?searchQuery=${searchQuery}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          marksDetails: filteredMarksDetails,
+        }),
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `Report_${searchQuery}.pdf`);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+      } else {
+        console.error('Failed to download report:', response.statusText);
+        alert('Failed to download the report. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error downloading report:', error);
+      alert('An error occurred while downloading the report.');
     }
   };
   return (
@@ -280,8 +331,10 @@ const ViewStudentReportSheet = () => {
       {details.name && (
         <div className="mt-8 p-4 border border-gray-300 rounded-md shadow-md">
 
-
-          <h2 className="text-xl font-bold mb-4 text-gray-700">Student Report</h2>
+          <div className="w-full flex items-center justify-between">
+            <h2 className="text-xl font-bold mb-4 text-gray-700">Student Report</h2>
+            <button onClick={(e) => handleDownloadButton(e, details.enrollmentNumber)} className=" w-auto inline-flex justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">Download as PDF</button>
+          </div>
           <div className="flex items-center gap-4 mb-4">
             <img
               src={details.profilePhoto || 'https://via.placeholder.com/100'}

@@ -83,9 +83,9 @@ const MarksInManualForm = () => {
                     <select name="examType" id="examType" onChange={handleChange}
                         className="mb-4 p-2 border-grey-50 text-black border-[.5px] border-slate-500 rounded w-full dark:bg-[#1D2A39] dark:text-white">
                         <option value="Default" defaultChecked>Select Exam Type</option>
-                        <option value="Mid-Sem-1">Mid-1</option>
-                        <option value="Mid-Sem-2">Mid-2</option>
-                        <option value="External">External</option>
+                        <option value="mid-sem-1">Mid-1</option>
+                        <option value="mid-sem-2">Mid-2</option>
+                        <option value="external">External</option>
                     </select>
                     <input
                         type="text"

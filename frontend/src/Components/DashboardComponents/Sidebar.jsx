@@ -142,9 +142,6 @@ const Sidebar = ({ isOpen, toggleSidebar, userType }) => {
               </div>
               {isReportDropDownOpen && (
                 <div className="pl-4 mt-2 space-y-2">
-                  <Link to={`${BASEURL}/dashboard/report/generate-student-report`} className="block text-white p-2 hover:bg-slate-700 rounded">
-                    Generate Student Report
-                  </Link>
                   <Link to={`${BASEURL}/dashboard/report/view-student-report`} className="block text-white p-2 hover:bg-slate-700 rounded">
                     View Report
                   </Link>
@@ -221,9 +218,6 @@ const Sidebar = ({ isOpen, toggleSidebar, userType }) => {
               </div>
               {isReportDropDownOpen && (
                 <div className="pl-4 mt-2 space-y-2">
-                  <Link to={`${BASEURL}/dashboard/report/generate-student-report`} className="block text-white p-2 hover:bg-slate-700 rounded">
-                    Generate Student Report
-                  </Link>
                   <Link to={`${BASEURL}/dashboard/report/view-student-report`} className="block text-white p-2 hover:bg-slate-700 rounded">
                     View Report
                   </Link>

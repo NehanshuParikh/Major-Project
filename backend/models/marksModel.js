@@ -1,11 +1,6 @@
 import mongoose from "mongoose";
 
 const marksSchema = new mongoose.Schema({
-    marksId: {
-        type: String,
-        required: true,
-        unique: true
-    },
     studentId: {
         type: String,
         required: true,

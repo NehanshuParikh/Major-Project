@@ -23,7 +23,7 @@ const upload = multer({
 });
 
 export const setExamTypeSubjectBranchDivision = async (req, res) => {
-    const { examType, subject, branch, division, level, school, semester } = req.body;
+    let { examType, subject, branch, division, level, school, semester } = req.body;
     const userId = req.user.userId; // Getting faculty ID from the logged-in user
 
     // Ensure all fields are filled
@@ -32,6 +32,13 @@ export const setExamTypeSubjectBranchDivision = async (req, res) => {
     }
 
     try {
+        // Convert all string fields in req.body to lowercase
+        examType = examType.toLowerCase();
+        subject = subject.toLowerCase();
+        branch = branch.toLowerCase();
+        level = level.toLowerCase();
+        school = school.toLowerCase();
+
         // Check if the HOD has already granted permission for this exam type and subject
         const permission = await Permission.findOne({
             facultyId: userId,
@@ -50,13 +57,13 @@ export const setExamTypeSubjectBranchDivision = async (req, res) => {
         }
 
         // Set cookies with the selected exam type and subject details
-        res.cookie('examType', examType, { httpOnly: true });
-        res.cookie('subject', subject, { httpOnly: true });
-        res.cookie('branch', branch, { httpOnly: true });
-        res.cookie('division', division, { httpOnly: true });
-        res.cookie('level', level, { httpOnly: true });
-        res.cookie('school', school, { httpOnly: true });
-        res.cookie('semester', semester, { httpOnly: true });
+        res.cookie('examType', examType);
+        res.cookie('subject', subject);
+        res.cookie('branch', branch);
+        res.cookie('division', division);
+        res.cookie('level', level);
+        res.cookie('school', school);
+        res.cookie('semester', semester);
 
         res.status(200).json({ message: 'Exam type, subject, and details selected successfully' });
     } catch (error) {
@@ -142,11 +149,12 @@ export const marksEntry = async (req, res) => {
     }
 };
 
+
 export const uploadMarksSheet = async (req, res) => {
     try {
         const file = req.file;
 
-        // Normalize the form data to lowercase
+        // Normalize and parse input fields
         const {
             examType,
             subject,
@@ -157,9 +165,9 @@ export const uploadMarksSheet = async (req, res) => {
             semester,
         } = req.body;
 
-        const facultyId = req.user.userId; // Get faculty ID from the logged-in user
+        const facultyId = req.user.userId; // Faculty ID from logged-in user
 
-        // Normalize the fields to lowercase
+        // Normalize the fields
         const normalizedExamType = examType.trim().toLowerCase();
         const normalizedSubject = subject.trim().toLowerCase();
         const normalizedBranch = branch.trim().toLowerCase();
@@ -168,7 +176,7 @@ export const uploadMarksSheet = async (req, res) => {
         const normalizedDivision = parseInt(division.trim());
         const normalizedSemester = parseInt(semester.trim());
 
-        // Check if the faculty has a corresponding permission
+        // Check if the faculty has permission
         const permission = await Permission.findOne({
             facultyId,
             examType: normalizedExamType,
@@ -184,33 +192,13 @@ export const uploadMarksSheet = async (req, res) => {
             return res.status(403).json({ message: 'You do not have permission to upload the marks' });
         }
 
-        // If no file is uploaded, assume it's individual marks entry via form
         if (!file) {
-            if (!studentId || !marks) {
-                return res.status(400).json({ message: 'All required parameters are not provided' });
-            }
-
-            const marksEntry = new Marks({
-                marksId: `${studentId}-Sem-${normalizedSemester}-${normalizedSubject}-${normalizedExamType}-${normalizedLevel}-${normalizedBranch}-${normalizedSchool}`,
-                studentId,
-                marks,
-                examType: normalizedExamType,
-                subject: normalizedSubject,
-                level: normalizedLevel,
-                branch: normalizedBranch,
-                division: normalizedDivision,
-                school: normalizedSchool,
-                semester: normalizedSemester,
-            });
-
-            await marksEntry.save();
-            await Permission.findByIdAndUpdate(permission._id, { marksSubmitted: true }, { new: true });
-
-            return res.status(201).json({ message: 'Marks entered successfully', marksEntry });
+            return res.status(400).json({ message: 'No file uploaded for bulk marks entry' });
         }
 
-        // If a file is uploaded, process bulk marks upload
+        // Process the uploaded file
         const workbook = xlsx.readFile(file.path);
+        const bulkUpdates = [];
 
         for (const sheetName of workbook.SheetNames) {
             const sheet = workbook.Sheets[sheetName];
@@ -218,35 +206,67 @@ export const uploadMarksSheet = async (req, res) => {
 
             for (const row of data) {
                 const { studentId, marks } = row;
+
                 if (!studentId || marks === undefined) {
+                    console.warn(`Skipping row due to missing fields: ${JSON.stringify(row)}`);
                     continue;
                 }
 
-                const marksEntry = new Marks({
-                    marksId: `${studentId}-Sem-${normalizedSemester}-${normalizedSubject}-${normalizedExamType}-${normalizedLevel}-${normalizedBranch}-${normalizedSchool}`,
-                    studentId,
-                    marks,
-                    examType: normalizedExamType,
-                    subject: normalizedSubject,
-                    level: normalizedLevel,
-                    branch: normalizedBranch,
-                    division: normalizedDivision,
-                    school: normalizedSchool,
-                    semester: normalizedSemester,
-                });
-
-                await marksEntry.save();
+                // Update or insert the record using the compound unique index
+                await Marks.updateOne(
+                    {
+                        studentId,
+                        examType: normalizedExamType,
+                        subject: normalizedSubject,
+                        semester: normalizedSemester,
+                    },
+                    {
+                        $set: {
+                            marks,
+                            level: normalizedLevel,
+                            branch: normalizedBranch,
+                            division: normalizedDivision,
+                            school: normalizedSchool,
+                        },
+                    },
+                    { upsert: true }
+                );
             }
         }
 
+
+        // Perform bulk write operation
+        if (bulkUpdates.length > 0) {
+            await Marks.bulkWrite(bulkUpdates);
+        }
+
+        // Clean up the uploaded file
         fs.unlinkSync(file.path);
 
-        await Permission.findByIdAndUpdate(permission._id, { status: 'Completed', marksSubmitted: true }, { new: true });
+        // Update permission status
+        const updatedPermission = await Permission.findOneAndUpdate(
+            {
+                facultyId,
+                examType: normalizedExamType,
+                subject: normalizedSubject,
+                semester: normalizedSemester,
+                branch: normalizedBranch,
+                division: normalizedDivision,
+                level: normalizedLevel,
+                school: normalizedSchool,
+            },
+            {
+                status: 'Completed',
+                marksSubmitted: true,
+            },
+            { new: true }
+        );
 
+        console.log(updatedPermission);
         res.status(200).json({ message: 'Marks uploaded successfully, permission status updated' });
     } catch (error) {
-        console.error('Error uploading marks in bulk or individually:', error);
-        res.status(500).json({ message: 'Error uploading marks in bulk or individually', error });
+        console.error('Error uploading marks:', error);
+        res.status(500).json({ message: 'Error uploading marks', error });
     }
 };
 

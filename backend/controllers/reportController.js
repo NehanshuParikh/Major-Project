@@ -7,7 +7,7 @@ import { readFile } from 'fs/promises';
 import path from 'path';
 import pdf from 'html-pdf';
 import { createCanvas } from 'canvas'; // Importing the createCanvas function
-import {Chart, registerables} from 'chart.js/auto'; // Importing Chart.js
+import { Chart, registerables } from 'chart.js/auto'; // Importing Chart.js
 import { readFileSync } from 'fs';
 import bcrypt from 'bcryptjs';
 
@@ -27,9 +27,72 @@ const imageSrc = `data:image/png;base64,${imageBase64}`;
 
 Chart.register(...registerables); // Register chart.js components
 
+const generateTableHTML = (marksDetails) => {
+    // Group marks by examType and semester
+    const groupedMarks = marksDetails.reduce((acc, mark) => {
+        const examType = mark.examType.replace(/-/g, ' ');
+        const semester = `Semester ${mark.semester}`;
+        if (!acc[examType]) acc[examType] = {};
+        if (!acc[examType][semester]) acc[examType][semester] = [];
+        acc[examType][semester].push(mark);
+        return acc;
+    }, {});
+
+    let tableHTML = '';
+
+    for (const examType in groupedMarks) {
+        tableHTML += `<h2>${examType
+            .split('-') // Split by hyphen (or spaces if needed)
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize each word
+            .join(' ')}</h2>`; // Join words with spaces
+
+
+        for (const semester in groupedMarks[examType]) {
+            tableHTML += `
+                <h3>${semester}</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Marks</th>
+                            <th>Branch</th>
+                            <th>Division</th>
+                            <th>School</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${groupedMarks[examType][semester]
+                    .map(
+                        (mark) => `
+                                <tr>
+                                    <td>${mark.subject.toUpperCase()}</td>
+                                    <td>${mark.marks}</td>
+                                    <td>${mark.branch.toUpperCase()}</td>
+                                    <td>${mark.division}</td>
+                                    <td>${mark.school.toUpperCase()}</td>
+                                </tr>
+                            `
+                    )
+                    .join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+    }
+
+    return tableHTML;
+};
+
+
+
+
 export const generateStudentReport = async (req, res) => {
     try {
         const searchQuery = req.query.searchQuery || req.body.searchQuery;
+        const { marksDetails } = req.body;
+
+        // console.log('Request Query:', req.query);
+        // console.log('Request Body:', req.body);
 
         if (!searchQuery) {
             return res.status(400).json({ success: false, message: 'Search query is required' });
@@ -37,7 +100,7 @@ export const generateStudentReport = async (req, res) => {
 
         const student = await Student.findOne({
             $or: [
-                { userId: searchQuery },
+                { enrollmentId: searchQuery },
                 { fullname: new RegExp(searchQuery, 'i') }
             ]
         });
@@ -45,6 +108,7 @@ export const generateStudentReport = async (req, res) => {
         if (!student) {
             return res.status(404).json({ success: false, message: 'Student not found' });
         }
+        console.log(student.fullName)
 
         const marks = await Marks.find({ studentId: student.userId }).sort({ examType: 1, semester: 1 });
 
@@ -53,177 +117,24 @@ export const generateStudentReport = async (req, res) => {
 
         // Replace placeholders with actual data
         templateContent = templateContent
-            .replace('{{name}}', user.fullname)
-            .replace('{{userId}}', user.userId)
-            .replace('{{email}}', user.email)
-            .replace('{{path}}', imageSrc)
-            .replace('{{mobile}}', user.mobile || 'Not provided');
+            .replace('{{userId}}', student.enrollmentId)
+            .replace('{{student_name}}', student.fullName)
+            .replace('{{email}}', student.email)
+            .replace('{{path}}', student.profilePhoto)
+            .replace('{{mobile}}', student.mobile || 'Not provided');
 
-        // Group marks by exam type and semester
-        const groupedMarks = marks.reduce((acc, mark) => {
-            const examTypeFormatted = mark.examType.replace(/-/g, ' '); // Format examType for easier comparison
-            if (!acc[examTypeFormatted]) acc[examTypeFormatted] = {};
-            if (!acc[examTypeFormatted][mark.semester]) acc[examTypeFormatted][mark.semester] = [];
-            acc[examTypeFormatted][mark.semester].push(mark);
-            return acc;
-        }, {});
+        // console.log(templateContent); // Check if name is being replaced correctly
 
-        // Function to create tables and charts for Mid Sem 1 and Mid Sem 2
-        const createTableAndChart = async (examType) => {
-            let tableRows = '';
-            let chartImages = '';
 
-            if (groupedMarks[examType]) {
-                for (const semester in groupedMarks[examType]) {
-                    const canvas = createCanvas(600, 400);
-                    const ctx = canvas.getContext('2d');
-
-                    const chartData = {
-                        labels: groupedMarks[examType][semester].map(m => m.subject),
-                        datasets: [
-                            {
-                                label: `Marks for ${examType} Semester ${semester}`,
-                                data: groupedMarks[examType][semester].map(m => m.marks),
-                                backgroundColor: 'rgba(0, 204, 255, 0.6)',
-                                borderColor: 'rgba(75, 192, 192, 1)',
-                                borderWidth: 1
-                            }
-                        ]
-                    };
-
-                    const chartConfig = {
-                        type: 'bar',
-                        data: chartData,
-                    };
-
-                    new Chart(ctx, chartConfig);
-                    const imageBuffer = canvas.toBuffer('image/png');
-                    const chartImage = `data:image/png;base64,${imageBuffer.toString('base64')}`;
-
-                    tableRows += `
-                        <h2>Semester ${semester} ${examType} Marks</h2>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Semester</th>
-                                    <th>Exam Type</th>
-                                    <th>Subject</th>
-                                    <th>Marks</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${groupedMarks[examType][semester].map(mark => `
-                                    <tr>
-                                        <td>${mark.semester}</td>
-                                        <td>${mark.examType}</td>
-                                        <td>${mark.subject}</td>
-                                        <td>${mark.marks}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                        <div class="chart-container">
-                            <h2>Semester ${semester} ${examType} Performance</h2>
-                            <img src="${chartImage}" alt="Chart">
-                        </div>
-                    `;
-                }
-            }
-
-            return tableRows;
-        };
-
-        // Create tables and charts for Mid Sem 1 and Mid Sem 2
-        const midSem1TableAndChart = await createTableAndChart('Mid Sem 1');
-        const midSem2TableAndChart = await createTableAndChart('Mid Sem 2');
-
-        // SGPA and CGPA Calculation
-        const sgpaCgpaData = {};
-        let totalSGPA = 0;
-        let totalCGPA = 0;
-        let semesterCount = 0;
-
-        for (const semester in groupedMarks) {
-            const marksForSemester = groupedMarks[semester] || [];
-
-            if (marksForSemester.length > 0) {
-                const totalMarks = marksForSemester.reduce((sum, mark) => sum + mark.marks, 0);
-                const totalCredits = marksForSemester.length; // Assume each subject has equal credits
-                const sgpa = totalMarks / totalCredits; // Simplified SGPA calculation
-
-                sgpaCgpaData[semester] = { SGPA: sgpa };
-
-                totalSGPA += sgpa;
-                semesterCount++;
-
-                // Assuming CGPA is a running average of SGPA
-                totalCGPA = totalSGPA / semesterCount;
-            }
-        }
-
-        let summaryTableRows = '';
-        let sgpaCgpaChart = '';
-
-        for (const semester in sgpaCgpaData) {
-            const canvas = createCanvas(600, 400);
-            const ctx = canvas.getContext('2d');
-
-            const chartData = {
-                labels: ['SGPA', 'CGPA'],
-                datasets: [
-                    {
-                        label: `SGPA and CGPA for Semester ${semester}`,
-                        data: [
-                            sgpaCgpaData[semester].SGPA,
-                            totalCGPA
-                        ],
-                        backgroundColor: ['rgba(255, 99, 132, 0.6)', 'rgba(75, 192, 192, 0.6)'],
-                        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(75, 192, 192, 1)'],
-                        borderWidth: 1
-                    }
-                ]
-            };
-
-            new Chart(ctx, { type: 'bar', data: chartData });
-
-            const imageBuffer = canvas.toBuffer('image/png');
-            const chartImage = `data:image/png;base64,${imageBuffer.toString('base64')}`;
-
-            summaryTableRows += `
-                <tr>
-                    <td>${semester}</td>
-                    <td>${sgpaCgpaData[semester].SGPA.toFixed(2)}</td>
-                    <td>${totalCGPA.toFixed(2)}</td>
-                </tr>
-            `;
-
-            sgpaCgpaChart += `
-                <div class="chart-container">
-                    <h2>SGPA and CGPA for Semester ${semester}</h2>
-                    <img src="${chartImage}" alt="SGPA and CGPA Chart">
-                </div>
-            `;
-        }
+        const midSem1Table = generateTableHTML(marksDetails.filter(mark => mark.examType === 'mid-sem-1'));
+        const midSem2Table = generateTableHTML(marksDetails.filter(mark => mark.examType === 'mid-sem-2'));
+        const externalTable = generateTableHTML(marksDetails.filter(mark => mark.examType === 'external'));
 
         templateContent = templateContent
-            .replace('{{midSem1Table}}', midSem1TableAndChart || '<p>No data available for Mid Sem 1.</p>')
-            .replace('{{midSem2Table}}', midSem2TableAndChart || '<p>No data available for Mid Sem 2.</p>')
-            .replace('{{sgpaCgpaTable}}', `
-                <h2>SGPA and CGPA Summary</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Semester</th>
-                            <th>SGPA</th>
-                            <th>CGPA</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${summaryTableRows}
-                    </tbody>
-                </table>
-            `)
-            .replace('{{sgpaCgpaChart}}', sgpaCgpaChart);
+            .replace('{{midSem1Table}}', midSem1Table || '<p>No data available for Mid Sem 1.</p>')
+            .replace('{{midSem2Table}}', midSem2Table || '<p>No data available for Mid Sem 2.</p>')
+            .replace('{{externalTable}}', externalTable || '<p>No data available for External.</p>');
+
 
         // Generate the PDF using html-pdf
         const options = {
@@ -236,7 +147,7 @@ export const generateStudentReport = async (req, res) => {
             if (err) {
                 return res.status(500).json({ success: false, message: 'Error generating PDF' });
             }
-            const fileName = `Report_${user.userId}.pdf`;
+            const fileName = `Report_${student.enrollmentId}.pdf`;
             res.setHeader('Content-disposition', 'attachment; filename=' + fileName);
             res.setHeader('Content-type', 'application/pdf');
             stream.pipe(res);
