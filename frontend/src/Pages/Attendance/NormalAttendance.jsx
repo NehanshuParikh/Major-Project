@@ -92,6 +92,67 @@ const NormalAttendance = () => {
         }
     };
 
+
+    const startAttendance = async (subject) => {
+        try {
+            const response = await fetch('http://localhost:5000/api/attendance/start-attendance', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ subject }), // Send subject as JSON
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                console.log("Success:", data.message);
+            } else {
+                console.error("Error:", data.message);
+            }
+        } catch (error) {
+            console.error("Request failed:", error);
+        }
+    };
+
+    const downloadExcel = async (subject) => {
+        try {
+            const response = await fetch(`http://localhost:5001/download-excel?subject=${encodeURIComponent(subject)}`, {
+                method: 'GET',
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to download file');
+            }
+
+            // Convert response to a blob
+            const blob = await response.blob();
+
+            // Create a temporary URL for the blob
+            const url = window.URL.createObjectURL(blob);
+
+            // Create a temporary link and trigger download
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${subject}.xlsx`; // Dynamically set the filename
+            document.body.appendChild(link);
+            link.click();
+
+            // Clean up the URL and link element
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error downloading file:', error);
+            alert('Failed to download the file.');
+        }
+    };
+
+    // Function to extract the subject from the selected unit string
+    const extractSubject = (unit) => {
+        const unitComponents = unit.split(' - ');
+        return unitComponents[5]?.trim(); // The subject is the 6th component in the unit string
+    };
+
     return (
         <DashboardLayout>
             <div className="container mx-auto p-6">
@@ -125,17 +186,20 @@ const NormalAttendance = () => {
                             </button>
                         </div>
                     </div>
-                 </form>
+                </form>
 
                 {/* Conditional rendering for student table */}
                 {students.length > 0 ? (
-                     <div className="mt-8">
-                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between w-full mb-4">
-                            <h2 className="text-xl font-semibold mb-2 md:mb-0">Student List</h2>
-                            <div className="w-content flex items-center justify-center gap-4">
-                                <button className='p-4 text-sm md:text-md bg-green-500 text-white font-bold py-2 rounded-md hover:bg-green-600 transition duration-200'>Start Attendance Tracking</button>
-                                <button className='p-4 text-sm md:text-md bg-red-500 text-white font-bold py-2 rounded-md hover:bg-red-600 transition duration-200'>End Attendance Tracking </button>
+                    <div className="mt-8">
+                        <div className="flex flex-col items-start md:items-center justify-between w-full mb-4">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between w-full">
+                                <h2 className="text-xl font-semibold mb-2 md:mb-0">Student List</h2>
+                                <div className="w-content flex items-center justify-center gap-4">
+                                    <button onClick={() => { startAttendance(extractSubject(formData.unit)) }} className='p-4 text-sm md:text-md bg-green-500 text-white font-bold py-2 rounded-md hover:bg-green-600 transition duration-200'>Start Attendance Tracking</button>
+                                    <button onClick={() => { downloadExcel(extractSubject(formData.unit)) }} className='p-4 text-sm md:text-md bg-blue-500 text-white font-bold py-2 rounded-md hover:bg-blue-600 transition duration-200'>Download Excel Sheet </button>
+                                </div>
                             </div>
+                            <p className="text-red-500">Please note that the file can only be downloaded once. Once the file is downloaded, it will be removed from the server and cannot be accessed again.</p>
                         </div>
                         <div className="overflow-x-auto max-w-full">
                             <table className="min-w-full bg-white border border-gray-200 text-center">

@@ -32,6 +32,7 @@ import NormalAttendance from './Pages/Attendance/NormalAttendance';
 import ProxyAttendance from './Pages/Attendance/ProxyAttendance';
 import GenerateStudentReport from './Pages/Reports/GenerateStudentReport';
 import ViewStudentReportSheet from './Pages/Reports/ViewStudentReportSheet';
+import ViewUnits from './Pages/Attendance/ViewUnits';
 function App() {
   const { loading } = useLoading();
   return (
@@ -70,6 +71,7 @@ function App() {
               <Route path="/api/dashboard/attendance/take/proxy-attendance" element={<ProxyAttendance />} />
               <Route path="/api/dashboard/attendance/manage-students" element={<HODDashboardManageStudents />} />
               <Route path="/api/dashboard/attendance/assign-units" element={<HODashboardAssignUnits />} />
+              <Route path="/api/dashboard/attendance/view-units" element={<ViewUnits />} />
 
               <Route path="/api/dashboard/report/generate-student-report" element={<GenerateStudentReport />} />
               <Route path="/api/dashboard/report/view-student-report" element={<ViewStudentReportSheet />} />

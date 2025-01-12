@@ -8,6 +8,7 @@ import reportRoutes from './routes/reportRoutes.js'
 import dashboardRoutes from './routes/dashboardRoutes.js'
 import profileRoutes from './routes/profileRoutes.js'
 import unitRoutes from './routes/unitRoutes.js'
+import attendanceRoutes from './routes/attendanceRoutes.js'
 import cookieParser from 'cookie-parser';
 import cron from 'node-cron';
 import { Permission } from './models/permissionModel.js';
@@ -45,6 +46,7 @@ app.use("/api/dashboard", dashboardRoutes)
 app.use("/api/marksManagement", marksRoutes)
 app.use("/api/reports", reportRoutes);
 app.use("/api/units/", unitRoutes)
+app.use("/api/attendance", attendanceRoutes)
 // routes for frontend 
 app.use("/api/user", profileRoutes);
 
