@@ -61,27 +61,27 @@ const HODManagingDuty = () => {
   return (
     <DashboardLayout>
       <div className="p-6">
-        <h1 className="text-3xl font-bold mb-5 text-center">HOD Viewing Panel for Duties</h1>
+        <h1 className="text-3xl font-bold mb-5 text-center dark:text-white">HOD Viewing Panel for Duties</h1>
         {duties.length > 0 ? (
           <div className="overflow-x-auto rounded-lg shadow-lg">
-            <table className="min-w-full bg-white border border-gray-200">
-              <thead className="bg-gray-100">
+            <table className="min-w-full bg-white dark:bg-gray-800 border dark:text-white border-gray-200 dark:border-gray-700">
+              <thead className="bg-gray-100 dark:bg-gray-800">
                 <tr>
-                  <th className="py-2 px-4 border-b text-left text-gray-600">S. No.</th>
-                  <th className="py-2 px-4 border-b text-left text-gray-600">Faculty Name</th>
-                  <th className="py-2 px-4 border-b text-left text-gray-600">Duty Title</th>
-                  <th className="py-2 px-4 border-b text-left text-gray-600">Duty Assigned</th>
-                  <th className="py-2 px-4 border-b text-left text-gray-600">Status</th>
-                  <th className="py-2 px-4 border-b text-left text-gray-600">Expires In</th>
+                  <th className="py-2 px-4 border-b text-left text-gray-600 dark:text-white ">S. No.</th>
+                  <th className="py-2 px-4 border-b text-left text-gray-600 dark:text-white ">Faculty Name</th>
+                  <th className="py-2 px-4 border-b text-left text-gray-600 dark:text-white ">Duty Title</th>
+                  <th className="py-2 px-4 border-b text-left text-gray-600 dark:text-white ">Duty Assigned</th>
+                  <th className="py-2 px-4 border-b text-left text-gray-600 dark:text-white ">Status</th>
+                  <th className="py-2 px-4 border-b text-left text-gray-600 dark:text-white ">Expires In</th>
                 </tr>
               </thead>
               <tbody>
                 {duties.map((duty, index) => (
-                  <tr key={duty.id} className="hover:bg-gray-100 transition-colors duration-200">
-                    <td className="py-2 px-4 border-b">{index + 1}</td>
-                    <td className="py-2 px-4 border-b">{duty.facultyName}</td>
-                    <td className="py-2 px-4 border-b">{duty.dutyName}</td>
-                    <td className="py-2 px-4 border-b">
+                  <tr key={duty.id} className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                    <td className="py-2 px-4 border-b dark:border-b-gray-500">{index + 1}</td>
+                    <td className="py-2 px-4 border-b dark:border-b-gray-500">{duty.facultyName}</td>
+                    <td className="py-2 px-4 border-b dark:border-b-gray-500">{duty.dutyName}</td>
+                    <td className="py-2 px-4 border-b dark:border-b-gray-500">
                       {new Date(duty.createdAt).toLocaleDateString('en-IN', {
                         day: '2-digit',
                         month: '2-digit',

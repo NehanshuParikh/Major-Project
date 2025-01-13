@@ -156,10 +156,10 @@ const ProxyAttendance = () => {
     return (
         <DashboardLayout>
             <div className="container mx-auto p-6">
-                <h1 className="text-2xl font-semibold mb-4">Proxy Attendance</h1>
+                <h1 className="text-2xl font-semibold mb-4 dark:text-white">Proxy Attendance</h1>
                 <form className="flex flex-col gap-4" onSubmit={handleUnitSubmission}>
                     <div className="flex flex-col gap-4">
-                        <label htmlFor="unit" className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="unit" className="block text-sm font-medium text-gray-700 dark:text-white">
                             Select Unit
                         </label>
                         <div className="w-full flex flex-col md:flex-row items-center justify-evenly md:gap-4">
@@ -168,7 +168,7 @@ const ProxyAttendance = () => {
                                 id="unit"
                                 value={formData.unit}
                                 onChange={handleChange}
-                                className="block w-full md:w-[90%] p-2 my-2 md:my-0 border border-gray-300 rounded-md"
+                                className="block w-full md:w-[90%] p-2 my-2 md:my-0 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 rounded-md dark:text-white"
                             >
                                 <option value="">-- Select a Unit --</option>
                                 {units.map((unit) => (
@@ -186,7 +186,7 @@ const ProxyAttendance = () => {
                             </button>
                         </div>
                     </div>
-                    <p className='text-red-500 text-sm text-justify'>NOTE: You are taking the proxy of another faculty as this will be informed to the HOD as well. You might be asked to give the valid reason in future. So kindly take the note of that.</p>
+                    <p className='text-red-500 dark:text-red-400 text-sm text-justify'>NOTE: You are taking the proxy of another faculty as this will be informed to the HOD as well. You might be asked to give the valid reason in future. So kindly take the note of that.</p>
                 </form>
 
                 {/* Conditional rendering for student table */}
@@ -194,16 +194,16 @@ const ProxyAttendance = () => {
                     <div className="mt-8">
                         <div className="flex flex-col items-start md:items-center justify-between w-full mb-4">
                             <div className="flex flex-col md:flex-row md:items-center justify-between w-full">
-                                <h2 className="text-xl font-semibold mb-2 md:mb-0">Student List</h2>
+                                <h2 className="text-xl font-semibold mb-2 md:mb-0 dark:text-white">Student List</h2>
                                 <div className="w-content flex items-center justify-center gap-4">
                                     <button onClick={() => { startAttendance(extractSubject(formData.unit)) }} className='p-4 text-sm md:text-md bg-green-500 text-white font-bold py-2 rounded-md hover:bg-green-600 transition duration-200'>Start Attendance Tracking</button>
                                     <button onClick={() => { downloadExcel(extractSubject(formData.unit)) }} className='p-4 text-sm md:text-md bg-blue-500 text-white font-bold py-2 rounded-md hover:bg-blue-600 transition duration-200'>Download Excel Sheet </button>
                                 </div>
                             </div>
-                            <p className="text-red-500">Please note that the file can only be downloaded once. Once the file is downloaded, it will be removed from the server and cannot be accessed again.</p>
+                            <p className="text-red-500 dark:text-red-400">Please note that the file can only be downloaded once. Once the file is downloaded, it will be removed from the server and cannot be accessed again.</p>
                         </div>
                         <div className="overflow-x-auto max-w-full">
-                            <table className="min-w-full bg-white border border-gray-200 text-center">
+                            <table className="min-w-full bg-white dark:bg-gray-800 dark:text-white border border-gray-200 dark:border-gray-700 text-center">
                                 <thead>
                                     <tr>
                                         <th className="py-2 px-4 border-b">Student ID</th>

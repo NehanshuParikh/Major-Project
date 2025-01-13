@@ -136,153 +136,159 @@ const AssigningDuty = () => {
     return (
         <DashboardLayout>
             <div className="p-6">
-                <h1 className="text-2xl font-bold mb-4">Assign Duty to Faculty</h1>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    {/* Exam Type */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Exam Type</label>
-                        <select
-                            name="examType"
-                            value={formData.examType}
-                            onChange={handleChange}
-                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                            required
-                        >
-                            <option value="">Select Exam Type</option>
-                            <option value="Mid-Sem-1">Mid-Sem-1</option>
-                            <option value="Mid-Sem-2">Mid-Sem-2</option>
-                            <option value="External">External</option>
-                        </select>
-                    </div>
+                <div className="w-full h-screen overflow-hidden">
+                    <div className="form-container w-full h-screen flex items-center justify-center flex-col bg-white dark:bg-gray-800 p-6 rounded-lg">
+                        <h1 className="text-2xl font-bold mb-4 dark:text-white">Assign Duty to Faculty</h1>
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            {/* Exam Type */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-white">Exam Type</label>
+                                <select
+                                    name="examType"
+                                    value={formData.examType}
+                                    onChange={handleChange}
+                                    className="mt-1 block w-full p-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white rounded-md"
+                                    required
+                                >
+                                    <option value="">Select Exam Type</option>
+                                    <option value="Mid-Sem-1">Mid-Sem-1</option>
+                                    <option value="Mid-Sem-2">Mid-Sem-2</option>
+                                    <option value="External">External</option>
+                                </select>
+                            </div>
+                            <div className="w-full flex items-center gap-4">
+                                {/* Subject */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-white">Subject</label>
+                                    <input
+                                        type="text"
+                                        name="subject"
+                                        value={formData.subject}
+                                        onChange={handleChange}
+                                        className="mt-1 block w-full p-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white rounded-md"
+                                        placeholder="Enter Subject"
+                                        required
+                                    />
+                                </div>
 
-                    {/* Subject */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Subject</label>
-                        <input
-                            type="text"
-                            name="subject"
-                            value={formData.subject}
-                            onChange={handleChange}
-                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                            placeholder="Enter Subject"
-                            required
-                        />
-                    </div>
+                                {/* Branch */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-white">Branch</label>
+                                    <input
+                                        type="text"
+                                        name="branch"
+                                        value={formData.branch}
+                                        onChange={handleChange}
+                                        className="mt-1 block w-full p-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white rounded-md"
+                                        placeholder="Enter Branch"
+                                        required
+                                    />
+                                </div>
 
-                    {/* Branch */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Branch</label>
-                        <input
-                            type="text"
-                            name="branch"
-                            value={formData.branch}
-                            onChange={handleChange}
-                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                            placeholder="Enter Branch"
-                            required
-                        />
-                    </div>
 
-                    {/* Level */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Level</label>
-                        <input
-                            type="text"
-                            name="level"
-                            value={formData.level}
-                            onChange={handleChange}
-                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                            placeholder="Enter Level"
-                            required
-                        />
-                    </div>
 
-                    {/* School */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">School</label>
-                        <input
-                            type="text"
-                            name="school"
-                            value={formData.school}
-                            onChange={handleChange}
-                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                            placeholder="Enter School"
-                            required
-                        />
-                    </div>
+                                {/* Level */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-white">Level</label>
+                                    <input
+                                        type="text"
+                                        name="level"
+                                        value={formData.level}
+                                        onChange={handleChange}
+                                        className="mt-1 block w-full p-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white rounded-md"
+                                        placeholder="Enter Level"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div className="w-full flex items-center gap-4">
+                                {/* School */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-white">School</label>
+                                    <input
+                                        type="text"
+                                        name="school"
+                                        value={formData.school}
+                                        onChange={handleChange}
+                                        className="mt-1 block w-full p-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white rounded-md"
+                                        placeholder="Enter School"
+                                        required
+                                    />
+                                </div>
+                                {/* Division */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-white">Division</label>
+                                    <input
+                                        type="number"
+                                        name="division"
+                                        value={formData.division}
+                                        onChange={handleChange}
+                                        className="mt-1 block w-full p-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white rounded-md"
+                                        placeholder="Enter Division"
+                                        required
+                                    />
+                                </div>
 
-                    {/* Division */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Division</label>
-                        <input
-                            type="number"
-                            name="division"
-                            value={formData.division}
-                            onChange={handleChange}
-                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                            placeholder="Enter Division"
-                            required
-                        />
-                    </div>
-
-                    {/* Semester */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Semester</label>
-                        <input
-                            type="number"
-                            name="semester"
-                            value={formData.semester}
-                            onChange={handleChange}
-                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                            placeholder="Enter Semester"
-                            required
-                        />
-                    </div>
-
-                    {/* Faculty Name or ID with auto-suggestion */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Faculty Name or ID</label>
-                        <input
-                            type="text"
-                            name="facultyNameOrId"
-                            value={formData.facultyNameOrId}
-                            onChange={handleChange}
-                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-                            placeholder="Enter Faculty Name or ID"
-                            required
-                        />
-                        {showSuggestions && (
-                            <ul className="border border-gray-300 rounded-md mt-2">
-                                {/* Check if there are suggestions */}
-                                {suggestions.length > 0 ? (
-                                    suggestions.map((faculty) => (
-                                        <li
-                                            key={faculty._id}
-                                            className="p-2 hover:bg-gray-200 cursor-pointer"
-                                            onClick={() => handleSelectSuggestion(faculty)}
-                                        >
-                                            {faculty.fullName} ({faculty.userId})
-                                        </li>
-                                    ))
-                                ) : (
-                                    // Display 'No match found' if no suggestions are available
-                                    <li className="p-2 text-gray-500">No match found</li>
+                                {/* Semester */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-white">Semester</label>
+                                    <input
+                                        type="number"
+                                        name="semester"
+                                        value={formData.semester}
+                                        onChange={handleChange}
+                                        className="mt-1 block w-full p-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white rounded-md"
+                                        placeholder="Enter Semester"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            {/* Faculty Name or ID with auto-suggestion */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-white">Faculty Name or ID</label>
+                                <input
+                                    type="text"
+                                    name="facultyNameOrId"
+                                    value={formData.facultyNameOrId}
+                                    onChange={handleChange}
+                                    className="mt-1 block w-full p-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white rounded-md"
+                                    placeholder="Enter Faculty Name or ID"
+                                    required
+                                />
+                                {showSuggestions && (
+                                    <ul className="border border-gray-300 dark:border-gray-700 dark:bg-gray-700 dark:text-white rounded-md mt-2">
+                                        {/* Check if there are suggestions */}
+                                        {suggestions.length > 0 ? (
+                                            suggestions.map((faculty) => (
+                                                <li
+                                                    key={faculty._id}
+                                                    className="p-2 hover:bg-gray-200 cursor-pointer"
+                                                    onClick={() => handleSelectSuggestion(faculty)}
+                                                >
+                                                    {faculty.fullName} ({faculty.userId})
+                                                </li>
+                                            ))
+                                        ) : (
+                                            // Display 'No match found' if no suggestions are available
+                                            <li className="p-2 text-gray-500">No match found</li>
+                                        )}
+                                    </ul>
                                 )}
-                            </ul>
-                        )}
-                    </div>
+                            </div>
 
 
-                    {/* Submit Button */}
-                    <div>
-                        <button
-                            type="submit"
-                            className="inline-flex justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-                        >
-                            Assign Duty
-                        </button>
+                            {/* Submit Button */}
+                            <div>
+                                <button
+                                    type="submit"
+                                    className="inline-flex justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                                >
+                                    Assign Duty
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
         </DashboardLayout>
     );

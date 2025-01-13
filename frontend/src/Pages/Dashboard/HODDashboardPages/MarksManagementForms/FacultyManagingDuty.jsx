@@ -66,26 +66,26 @@ const FacultyManagingDuty = () => {
   return (
     <DashboardLayout>
       <div className="p-6">
-        <h1 className="text-3xl font-bold mb-5 text-center">Faculty Duty Management</h1>
+        <h1 className="text-3xl font-bold mb-5 text-center dark:text-white">Faculty Duty Management</h1>
         {duties.length > 0 ? (
           <div className="overflow-x-auto rounded-lg shadow-lg">
-            <table className="min-w-full bg-white border border-gray-200">
-              <thead className="bg-gray-100">
+            <table className="min-w-full bg-white dark:bg-gray-800 dark:text-white border border-gray-200 dark:border-gray-800 ">
+              <thead className="bg-gray-100 dark:bg-gray-800 dark:text-white">
                 <tr>
-                  <th className="py-2 px-4 border-b text-left text-gray-600">S. No.</th>
-                  <th className="py-2 px-4 border-b text-left text-gray-600">Duty Title</th>
-                  <th className="py-2 px-4 border-b text-left text-gray-600">Assigned On</th>
-                  <th className="py-2 px-4 border-b text-left text-gray-600">Assigned By</th>
-                  <th className="py-2 px-4 border-b text-left text-gray-600">Status</th>
-                  <th className="py-2 px-4 border-b text-left text-gray-600">Expires In</th>
+                  <th className="py-2 px-4 border-b dark:border-gray-500 text-left text-gray-600 dark:text-white">S. No.</th>
+                  <th className="py-2 px-4 border-b dark:border-gray-500 text-left text-gray-600 dark:text-white">Duty Title</th>
+                  <th className="py-2 px-4 border-b dark:border-gray-500 text-left text-gray-600 dark:text-white">Assigned On</th>
+                  <th className="py-2 px-4 border-b dark:border-gray-500 text-left text-gray-600 dark:text-white">Assigned By</th>
+                  <th className="py-2 px-4 border-b dark:border-gray-500 text-left text-gray-600 dark:text-white">Status</th>
+                  <th className="py-2 px-4 border-b dark:border-gray-500 text-left text-gray-600 dark:text-white">Expires In</th>
                 </tr>
               </thead>
               <tbody>
                 {duties.map((duty, index) => (
-                  <tr key={duty.id} className="hover:bg-gray-100 transition-colors duration-200">
-                    <td className="py-2 px-4 border-b">{index + 1}</td>
-                    <td className="py-2 px-4 border-b">{duty.dutyName}</td>
-                    <td className="py-2 px-4 border-b">
+                  <tr key={duty.id} className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
+                    <td className="py-2 px-4">{index + 1}</td>
+                    <td className="py-2 px-4 capitalize">{duty.dutyName}</td>
+                    <td className="py-2 px-4">
                       {new Date(duty.createdAt).toLocaleDateString('en-IN', {
                         day: '2-digit',
                         month: '2-digit',
@@ -93,12 +93,12 @@ const FacultyManagingDuty = () => {
                       })}
                     </td>
                     <td>{duty.hodId.fullName}</td>
-                    <td className="py-2 px-4 border-b">
+                    <td className="py-2 px-4">
                       <span className={`inline-block px-2 py-1 rounded-full text-white ${duty.status === 'Completed' ? 'bg-green-500' : 'bg-red-500'}`}>
                         {duty.status}
                       </span>
                     </td>
-                    <td className="py-2 px-4 border-b">
+                    <td className="py-2 px-4">
                       {calculateDaysRemaining(duty.expiresAt)} days
                     </td>
                   </tr>

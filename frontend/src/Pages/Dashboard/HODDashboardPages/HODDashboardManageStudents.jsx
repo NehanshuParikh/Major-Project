@@ -41,11 +41,11 @@ const HODDashboardManageStudents = () => {
     return (
         <DashboardLayout>
             <div className="max-w-screen min-h-screen max-h-screen overflow-hidden">
-                <h1 className='text-lg font-bold'>Manage Students:</h1>
+                <h1 className='text-lg font-bold dark:text-white'>Manage Students:</h1>
                 {students.length > 0 ? (
                     <div className="overflow-x-auto mt-6"> {/* Make this div scrollable */}
-                        <table border="1" cellPadding="10" style={{ width: '100%', textAlign: 'center' }} className='bg-gray-50 rounded-t-lg border-black shadow-lg shadow-gray-400'>
-                            <thead className='border-b-2'>
+                        <table border="1" cellPadding="10" style={{ width: '100%', textAlign: 'center' }} className='bg-gray-50 dark:bg-gray-800 dark:text-white rounded-t-lg border-black shadow-lg shadow-gray-400 dark:shadow-gray-200'>
+                            <thead className='border-b-2 dark:border-b-gray-500'>
                                 <tr className='p-32'>
                                     <th>Sr. No.</th>
                                     <th>Profile Photo</th>
@@ -60,7 +60,7 @@ const HODDashboardManageStudents = () => {
                             </thead>
                             <tbody>
                                 {students.map((student, index) => (
-                                    <tr key={student._id} className='hover:bg-gray-200 transition-colors cursor-pointer'>
+                                    <tr key={student._id} className='hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer'>
                                         <td>{index + 1}</td> {/* Serial number */}
                                         <td className='flex items-center justify-center'>
                                             <img

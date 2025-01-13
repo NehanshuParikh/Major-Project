@@ -64,15 +64,15 @@ const ViewUnits = () => {
   return (
     <DashboardLayout>
       <div className="p-6">
-        <h1 className="text-2xl font-bold mb-4">View Units</h1>
+        <h1 className="text-2xl font-bold mb-4 dark:text-white">View Units</h1>
         {loading ? (
-          <p>Loading units...</p>
+          <p className="dark:text-white">Loading units...</p>
         ) : error ? (
           <p className="text-red-500">{error}</p>
         ) : units.length === 0 ? (
           <p>No units found.</p>
         ) : (
-          <table className="table-auto border-collapse border border-gray-300 w-full">
+          <table className="table-auto border-collapse border border-gray-300 dark:border-gray-700 dark:text-white w-full">
             <thead>
               <tr>
                 <th className="border border-gray-300 px-4 py-2">HOD</th>
@@ -87,7 +87,7 @@ const ViewUnits = () => {
             </thead>
             <tbody>
               {units.map((unit, index) => (
-                <tr key={index} className="hover:bg-gray-200">
+                <tr key={index} className="hover:bg-gray-200 dark:hover:bg-gray-700">
                   <td className="border border-gray-300 px-4 py-2 text-sm">{unit.hod.fullName}</td>
                   <td className="border border-gray-300 px-4 py-2 text-sm">{unit.subject.name} ({unit.subject.code})</td>
                   <td className="border border-gray-300 px-4 py-2 text-sm">{unit.faculty.fullName}</td>

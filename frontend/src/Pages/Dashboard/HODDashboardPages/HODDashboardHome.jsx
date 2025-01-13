@@ -45,10 +45,10 @@ const HODDashboardHome = () => {
   return (
     <DashboardLayout>
         <div className="flex flex-col gap-4 md:flex-row w-[100%] lg:w-[100%] relative">
-          <Card title="Attendance" description="View and manage attendance." />
-          <Card title="Marks" description="Check student marks and reports." />
-          <Card title="Reports" description="Generate reports for departments." />
-          <Card title="File Sharing" description="Manage file sharing for staff and students." />
+          <Card title="Attendance" description="View and manage attendance." action='/api/dashboard/attendance/main-page' />
+          <Card title="Marks" description="Check student marks and reports." action='/api/dashboard/marks-management/addmarks' />
+          <Card title="Reports" description="Generate reports for departments." action='/api/dashboard/report/view-student-report' />
+          <Card title="File Sharing" description="Manage file sharing for staff and students." action='' />
         </div>
         <div className="mt-10">
           <div className="flex flex-col lg:flex-row flex-shrink items-center justify-center w-full h-max gap-4">

@@ -155,17 +155,17 @@ const HODashboardAssignUnits = () => {
         <DashboardLayout>
             <div className="p-6">
                 <div className=" w-full flex flex-col items-center">
-                    <form onSubmit={handleSubmit} className="space-y-4 w-full lg:w-3/4 p-8 bg-white rounded-lg shadow-lg shadow-gray-500">
+                    <form onSubmit={handleSubmit} className="space-y-4 w-full lg:w-3/4 p-8 bg-white dark:bg-gray-800 dark:text-white rounded-lg shadow-lg shadow-gray-500 dark:shadow-gray-700">
                         <h1 className="text-2xl font-bold mb-4 text-center">Assign Unit</h1>
                         {/* Faculty Name or ID with auto-suggestion */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Faculty Name or ID</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-white">Faculty Name or ID</label>
                             <input
                                 type="text"
                                 name="facultyIdOrName"
                                 value={formData.facultyIdOrName}
                                 onChange={handleChange}
-                                className="mt-1 w-full p-2 border border-gray-300 rounded-md"
+                                className="mt-1 w-full p-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-whote rounded-md"
                                 placeholder="Enter Faculty Name or ID"
                                 required
                             />
@@ -192,13 +192,13 @@ const HODashboardAssignUnits = () => {
                         <div className="w-full flex items-center gap-4">
                             {/* Level */}
                             <div className='w-full'>
-                                <label className="block text-sm font-medium text-gray-700">Level</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-white">Level</label>
                                 <input
                                     type="text"
                                     name="level"
                                     value={formData.level}
                                     onChange={handleChange}
-                                    className="mt-1 w-full p-2 border border-gray-300 rounded-md"
+                                    className="mt-1 w-full p-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-whote rounded-md"
                                     placeholder="Enter Level"
                                     required
                                 />
@@ -206,13 +206,13 @@ const HODashboardAssignUnits = () => {
 
                             {/* Branch */}
                             <div className='w-full'>
-                                <label className="block text-sm font-medium text-gray-700">Branch</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-white">Branch</label>
                                 <input
                                     type="text"
                                     name="branch"
                                     value={formData.branch}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                                    className="mt-1 block w-full p-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-whote rounded-md"
                                     placeholder="Enter Branch"
                                     required
                                 />
@@ -222,13 +222,13 @@ const HODashboardAssignUnits = () => {
                         <div className="w-full flex items-center gap-4 flex-col lg:flex-row">
                             {/* School */}
                             <div className="w-full">
-                                <label className="block text-sm font-medium text-gray-700">School</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-white">School</label>
                                 <input
                                     type="text"
                                     name="school"
                                     value={formData.school}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                                    className="mt-1 block w-full p-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-whote rounded-md"
                                     placeholder="Enter School"
                                     required
                                 />
@@ -236,13 +236,13 @@ const HODashboardAssignUnits = () => {
 
                             {/* Semester */}
                             <div className="w-full">
-                                <label className="block text-sm font-medium text-gray-700">Semester</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-white">Semester</label>
                                 <input
                                     type="number"
                                     name="semester"
                                     value={formData.semester}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                                    className="mt-1 block w-full p-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-whote rounded-md"
                                     placeholder="Enter Semester"
                                     required
                                 />
@@ -250,13 +250,13 @@ const HODashboardAssignUnits = () => {
 
                             {/* Division */}
                             <div className="w-full">
-                                <label className="block text-sm font-medium text-gray-700">Division</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-white">Division</label>
                                 <input
                                     type="number"
                                     name="division"
                                     value={formData.division}
                                     onChange={handleChange}
-                                    className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                                    className="mt-1 block w-full p-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-whote rounded-md"
                                     placeholder="Enter Division"
                                     required
                                 />
@@ -265,13 +265,13 @@ const HODashboardAssignUnits = () => {
 
                         {/* Subject Code or Name */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">Subject Code or Name</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-white">Subject Code or Name</label>
                             <input
                                 type="text"
                                 name="subjectCodeOrName"
                                 value={formData.subjectCodeOrName}
                                 onChange={handleChange}
-                                className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+                                className="mt-1 block w-full p-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-whote rounded-md"
                                 placeholder="Enter Subject Code or Name"
                                 required
                             />

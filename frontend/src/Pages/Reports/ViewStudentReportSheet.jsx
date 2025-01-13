@@ -217,7 +217,7 @@ const ViewStudentReportSheet = () => {
   };
   return (
     <DashboardLayout>
-      <label className="text-sm font-medium text-gray-700">Student Name or ID</label>
+      <label className="text-sm font-medium text-gray-700 dark:text-white">Student Name or ID</label>
       <form onSubmit={handleSubmit} method="post" className='w-full flex items-center justify-start gap-2'>
         {/* Faculty Name or ID with auto-suggestion */}
         <div className='w-10/12'>
@@ -226,18 +226,18 @@ const ViewStudentReportSheet = () => {
             name="studentNameOrId"
             value={formData.studentNameOrId}
             onChange={handleChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+            className="mt-1 block w-full p-2 border border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-md"
             placeholder="Enter Student Name or ID"
             required
           />
           {showSuggestions && (
-            <ul className="border border-gray-300 rounded-md mt-2">
+            <ul className="border border-gray-300  dark:border-gray-700 dark:bg-gray-800 dark:text-white rounded-md mt-2">
               {/* Check if there are suggestions */}
               {suggestions.length > 0 ? (
                 suggestions.map((student) => (
                   <li
                     key={student._id}
-                    className="p-2 hover:bg-gray-200 cursor-pointer"
+                    className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer"
                     onClick={() => handleSelectSuggestion(student)}
                   >
                     {student.fullName} ({student.enrollmentId})
@@ -257,8 +257,8 @@ const ViewStudentReportSheet = () => {
           Search
         </button>
       </form>
-      <div className="w-full flex flex-col items-start justify-evenly mt-3 bg-gray-50 rounded-lg p-4 shadow-lg">
-        <h3 className="text-lg w-full border-b-2 pb-2">Filters:</h3>
+      <div className="w-full flex flex-col items-start justify-evenly mt-3 bg-gray-50 dark:bg-gray-800 dark:text-white rounded-lg p-4 shadow-lg">
+        <h3 className="text-lg w-full border-b-2 border-b-gray-200 dark:border-b-gray-500 pb-2">Filters:</h3>
         <div className="flex w-full items-center justify-start gap-4 mt-2">
           {/* Exam Type Filter */}
           <div className=''>
@@ -266,7 +266,7 @@ const ViewStudentReportSheet = () => {
             <div className="flex gap-2">
               <button
                 onClick={() => handleFilterChange('examType', '')} // "All" resets the filter
-                className={`px-3 py-1 border rounded-md ${!selectedExamType ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+                className={`px-3 py-1 border rounded-md ${!selectedExamType ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
               >
                 All
               </button>
@@ -274,7 +274,7 @@ const ViewStudentReportSheet = () => {
                 <button
                   key={type}
                   onClick={() => handleFilterChange('examType', type)}
-                  className={`px-3 py-1 border rounded-md capitalize ${selectedExamType === type ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+                  className={`px-3 py-1 border rounded-md capitalize ${selectedExamType === type ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
                 >
                   {type}
                 </button>
@@ -288,7 +288,7 @@ const ViewStudentReportSheet = () => {
             <div className="flex gap-2">
               <button
                 onClick={() => handleFilterChange('semester', '')} // "All" resets the filter
-                className={`px-3 py-1 border rounded-md  ${!selectedSemester ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+                className={`px-3 py-1 border rounded-md  ${!selectedSemester ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
               >
                 All
               </button>
@@ -296,7 +296,7 @@ const ViewStudentReportSheet = () => {
                 <button
                   key={sem}
                   onClick={() => handleFilterChange('semester', sem)}
-                  className={`px-3 py-1 border rounded-md ${selectedSemester === sem ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+                  className={`px-3 py-1 border rounded-md ${selectedSemester === sem ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
                 >
                   {sem}
                 </button>
@@ -311,7 +311,7 @@ const ViewStudentReportSheet = () => {
           <div className='flex gap-2'>
             <button
               onClick={() => handleFilterChange('subject', '')}
-              className={`px-3 py-1 border rounded-md  ${!selectedSubject ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+              className={`px-3 py-1 border rounded-md  ${!selectedSubject ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
             >
               All
             </button>
@@ -319,7 +319,7 @@ const ViewStudentReportSheet = () => {
               <button
                 key={subject}
                 onClick={() => handleFilterChange('subject', subject)}
-                className={`px-3 py-1 border rounded-md ${selectedSubject === subject ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+                className={`px-3 py-1 border rounded-md ${selectedSubject === subject ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
               >
                 {subject}
               </button>
@@ -329,10 +329,10 @@ const ViewStudentReportSheet = () => {
       </div>
 
       {details.name && (
-        <div className="mt-8 p-4 border border-gray-300 rounded-md shadow-md">
+        <div className="mt-8 p-4 border border-gray-300 dark:border-gray-700 dark:text-white rounded-md shadow-md">
 
           <div className="w-full flex items-center justify-between">
-            <h2 className="text-xl font-bold mb-4 text-gray-700">Student Report</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-700 dark:text-white">Student Report</h2>
             <button onClick={(e) => handleDownloadButton(e, details.enrollmentNumber)} className=" w-auto inline-flex justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">Download as PDF</button>
           </div>
           <div className="flex items-center gap-4 mb-4">
@@ -353,20 +353,20 @@ const ViewStudentReportSheet = () => {
           {marksDetails.length > 0 ? (
             <table className="w-full mt-2 border-collapse border border-gray-200">
               <thead>
-                <tr className="bg-gray-100">
-                  <th className="border border-gray-200 p-2">Subject</th>
-                  <th className="border border-gray-200 p-2">Exam Type</th>
-                  <th className="border border-gray-200 p-2">Marks</th>
-                  <th className="border border-gray-200 p-2">Semester</th>
+                <tr className="bg-gray-100 dark:bg-gray-800">
+                  <th className="border border-gray-200 dark:border-gray-500 p-2">Subject</th>
+                  <th className="border border-gray-200 dark:border-gray-500 p-2">Exam Type</th>
+                  <th className="border border-gray-200 dark:border-gray-500 p-2">Marks</th>
+                  <th className="border border-gray-200 dark:border-gray-500 p-2">Semester</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredMarksDetails.map((mark) => (
                   <tr key={mark._id} className='text-center'>
-                    <td className="border border-gray-200 p-2 capitalize">{mark.subject}</td>
-                    <td className="border border-gray-200 p-2 capitalize">{mark.examType}</td>
-                    <td className="border border-gray-200 p-2">{mark.marks}</td>
-                    <td className="border border-gray-200 p-2">{mark.semester}</td>
+                    <td className="border border-gray-200 dark:border-gray-500 p-2 capitalize">{mark.subject}</td>
+                    <td className="border border-gray-200 dark:border-gray-500 p-2 capitalize">{mark.examType}</td>
+                    <td className="border border-gray-200 dark:border-gray-500 p-2">{mark.marks}</td>
+                    <td className="border border-gray-200 dark:border-gray-500 p-2">{mark.semester}</td>
                   </tr>
                 ))}
               </tbody>
