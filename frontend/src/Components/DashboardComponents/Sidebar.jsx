@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
-import { FaBook, FaClipboardList, FaChartBar, FaChevronDown, FaChevronUp, FaHome, FaTimes } from 'react-icons/fa';
-import placeholderImage from '../../Assets/images/profile_placeholder.png'; // Default image
+import { FaBook, FaClipboardList, FaChartBar, FaChevronDown, FaChevronUp, FaHome, FaTimes, FaCogs } from 'react-icons/fa';
+import placeholderImage from '../../Assets/images/profile_placeholder.png'; // Default images
 import { Link } from 'react-router-dom';
 import ProfileContext from '../../Context/ProfileContext'; // Import ProfileContext
 
@@ -125,7 +125,7 @@ const Sidebar = ({ isOpen, toggleSidebar, userType }) => {
 
                 </div>
               )}
-              
+
             </div>
             <Link to="/student-resources" className="block text-white p-2 mb-4 hover:bg-slate-700 rounded">
               <FaBook className="inline-block mr-2" /> Student Resources
@@ -148,7 +148,7 @@ const Sidebar = ({ isOpen, toggleSidebar, userType }) => {
 
                 </div>
               )}
-              
+
             </div>
           </>
         )}
@@ -156,6 +156,9 @@ const Sidebar = ({ isOpen, toggleSidebar, userType }) => {
         {userType === 'HOD' && (
           <>
             <div className="mb-4">
+              <Link to={`${BASEURL}/dashboard/hod-central-panel`} className="block text-white p-2 mb-4 hover:bg-slate-700 rounded">
+                <FaCogs className="inline-block mr-2" /> HOD Central Panel
+              </Link>
               <div
                 className="text-white p-2 hover:bg-slate-700 rounded flex items-center justify-between cursor-pointer"
                 onClick={toggleMarksDropdown}
@@ -204,7 +207,7 @@ const Sidebar = ({ isOpen, toggleSidebar, userType }) => {
 
                 </div>
               )}
-              
+
             </div>
             <div className="mb-4">
               <div
@@ -224,13 +227,14 @@ const Sidebar = ({ isOpen, toggleSidebar, userType }) => {
 
                 </div>
               )}
-              
+
             </div>
-            
+
 
             <Link to="/student-resources" className="block text-white p-2 mb-4 hover:bg-slate-700 rounded">
               <FaBook className="inline-block mr-2" /> Student Resources
             </Link>
+
           </>
         )}
 

@@ -93,14 +93,14 @@ const NormalAttendance = () => {
     };
 
 
-    const startAttendance = async (subject) => {
+    const startAttendance = async (attendanceDetails) => {
         try {
             const response = await fetch('http://localhost:5000/api/attendance/start-attendance', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ subject }), // Send subject as JSON
+                body: JSON.stringify(attendanceDetails), // Send all attendance details as JSON
             });
 
             const data = await response.json();
@@ -115,43 +115,48 @@ const NormalAttendance = () => {
         }
     };
 
-    const downloadExcel = async (subject) => {
+
+    const downloadExcel = async (attendanceDetails) => {
+        const { school, branch, semester, division, subject } = attendanceDetails;
         try {
-            const response = await fetch(`http://localhost:5001/download-excel?subject=${encodeURIComponent(subject)}`, {
+            const params = new URLSearchParams({
+                school: branch,  // Assign the correct value
+                branch: school,  // Assign the correct value
+                semester,
+                division,
+                subject,
+            });
+            // Perform the fetch request
+            const response = await fetch(`/download-excel?${params.toString()}`, {
                 method: 'GET',
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to download file');
-            }
-
-            // Convert response to a blob
-            const blob = await response.blob();
-
-            // Create a temporary URL for the blob
-            const url = window.URL.createObjectURL(blob);
-
-            // Create a temporary link and trigger download
+            // Create a URL and trigger the download
+            const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.download = `${subject}.xlsx`; // Dynamically set the filename
+            link.setAttribute('download', `${school}_${branch}_${semester}_${division}_${subject}.xlsx`);
             document.body.appendChild(link);
             link.click();
-
-            // Clean up the URL and link element
             link.remove();
-            window.URL.revokeObjectURL(url);
         } catch (error) {
-            console.error('Error downloading file:', error);
+            console.error('Error downloading Excel file:', error);
             alert('Failed to download the file.');
         }
     };
 
-    // Function to extract the subject from the selected unit string
-    const extractSubject = (unit) => {
+    const extractDetails = (unit) => {
         const unitComponents = unit.split(' - ');
-        return unitComponents[5]?.trim(); // The subject is the 6th component in the unit string
+        return {
+            level: unitComponents[0]?.trim(),
+            school: unitComponents[1]?.trim(),
+            branch: unitComponents[2]?.trim(),
+            semester: unitComponents[3]?.trim(),
+            division: unitComponents[4]?.trim(),
+            subject: unitComponents[5]?.trim(),
+        };
     };
+
 
     return (
         <DashboardLayout>
@@ -195,8 +200,20 @@ const NormalAttendance = () => {
                             <div className="flex flex-col md:flex-row md:items-center justify-between w-full">
                                 <h2 className="text-xl font-semibold mb-2 md:mb-0 dark:text-white">Student List</h2>
                                 <div className="w-content flex items-center justify-center gap-4">
-                                    <button onClick={() => { startAttendance(extractSubject(formData.unit)) }} className='p-4 text-sm md:text-md bg-green-500 text-white font-bold py-2 rounded-md hover:bg-green-600 transition duration-200'>Start Attendance Tracking</button>
-                                    <button onClick={() => { downloadExcel(extractSubject(formData.unit)) }} className='p-4 text-sm md:text-md bg-blue-500 text-white font-bold py-2 rounded-md hover:bg-blue-600 transition duration-200'>Download Excel Sheet </button>
+                                    <button
+                                        onClick={() => {
+                                            const attendanceDetails = extractDetails(formData.unit);
+                                            startAttendance(attendanceDetails);
+                                        }}
+                                        className='p-4 text-sm md:text-md bg-green-500 text-white font-bold py-2 rounded-md hover:bg-green-600 transition duration-200'
+                                    >
+                                        Start Attendance Tracking
+                                    </button>
+
+                                    <button onClick={() => {
+                                        const attendanceDetails = extractDetails(formData.unit);
+                                        downloadExcel(attendanceDetails)
+                                    }} className='p-4 text-sm md:text-md bg-blue-500 text-white font-bold py-2 rounded-md hover:bg-blue-600 transition duration-200'>Download Excel Sheet </button>
                                 </div>
                             </div>
                             <p className="text-red-500 dark:text-red-400">Please note that the file can only be downloaded once. Once the file is downloaded, it will be removed from the server and cannot be accessed again.</p>
@@ -212,7 +229,6 @@ const NormalAttendance = () => {
                                         <th className="py-2 px-4 border-b">School</th>
                                         <th className="py-2 px-4 border-b">Semester</th>
                                         <th className="py-2 px-4 border-b">Division</th>
-                                        <th className="py-2 px-4 border-b">Attendance Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -225,7 +241,6 @@ const NormalAttendance = () => {
                                             <td className="py-2 px-4 border-b">{student.school}</td>
                                             <td className="py-2 px-4 border-b">{student.semester}</td>
                                             <td className="py-2 px-4 border-b">{student.division}</td>
-                                            <td className="py-2 px-4 border-b">Present / Absent</td>
                                         </tr>
                                     ))}
                                 </tbody>

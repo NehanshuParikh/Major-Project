@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 const ProxyAttendance = () => {
     const [units, setUnits] = useState([]);
     const [students, setStudents] = useState([]); // State to store student data
+    const [isLoading, setIsLoading] = useState(false)
     const [formData, setFormData] = useState({
         unit: '',
     });
@@ -85,6 +86,46 @@ const ProxyAttendance = () => {
             } else {
                 setStudents([]); // Clear students if no data found
                 toast.error(data.message || "No students found");
+            }
+        } catch (error) {
+            console.error('Error fetching students:', error);
+            toast.error("Failed to fetch students");
+        }
+    };
+    const handleProxyMailToHOD = async () => {
+
+
+        const unitComponents = formData.unit.split(' - ');
+
+        const selectedUnit = {
+            level: unitComponents[0]?.trim(),
+            branch: unitComponents[1]?.trim(),
+            school: unitComponents[2]?.trim(),
+            semester: Number(unitComponents[3]?.match(/\d+/)?.[0] || ''),
+            division: Number(unitComponents[4]?.match(/\d+/)?.[0] || ''),
+            subject: unitComponents[5]?.trim(),
+            subjectCode: unitComponents[6]?.trim(),
+        };
+
+        console.log('Selected Unit:', selectedUnit);
+
+        try {
+            const response = await fetch('http://localhost:5000/api/attendance/proxy-mail-to-hod', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify(selectedUnit),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                console.log(data)
+                toast.success("Mail Sent to the Department HOD");
+            } else {
+                toast.error(data.message || "Error While sending the mail to the Department HOD");
             }
         } catch (error) {
             console.error('Error fetching students:', error);
@@ -196,7 +237,50 @@ const ProxyAttendance = () => {
                             <div className="flex flex-col md:flex-row md:items-center justify-between w-full">
                                 <h2 className="text-xl font-semibold mb-2 md:mb-0 dark:text-white">Student List</h2>
                                 <div className="w-content flex items-center justify-center gap-4">
-                                    <button onClick={() => { startAttendance(extractSubject(formData.unit)) }} className='p-4 text-sm md:text-md bg-green-500 text-white font-bold py-2 rounded-md hover:bg-green-600 transition duration-200'>Start Attendance Tracking</button>
+                                    {isLoading ? (
+                                        <button className='p-4 text-sm md:text-md bg-green-500 text-white font-bold py-2 rounded-md hover:bg-green-600 transition duration-200'>
+                                            <span>
+                                                <svg
+                                                    className="inline w-5 h-5 mr-2 text-white animate-spin"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <circle
+                                                        className="opacity-25"
+                                                        cx="12"
+                                                        cy="12"
+                                                        r="10"
+                                                        stroke="currentColor"
+                                                        strokeWidth="4"
+                                                    ></circle>
+                                                    <path
+                                                        className="opacity-75"
+                                                        fill="currentColor"
+                                                        d="M4 12a8 8 0 018-8v8z"
+                                                    ></path>
+                                                </svg>
+                                                Sending Email and Starting Attendance Tracker...
+                                            </span>
+                                        </button>
+                                    ) : (
+                                        <button onClick={async () => {
+                                            setIsLoading(true); // Disable the button and show "Starting..."
+                                            try {
+                                                await handleProxyMailToHOD(); // Wait for handleProxyMailToHOD to complete
+                                                await startAttendance(extractSubject(formData.unit)); // Then start attendance
+                                            } catch (error) {
+                                                console.error("Error in handling attendance workflow:", error);
+                                            } finally {
+                                                setIsLoading(false); // Re-enable the button
+                                            }
+                                        }}
+                                        className='p-4 text-sm md:text-md bg-green-500 text-white font-bold py-2 rounded-md hover:bg-green-600 transition duration-200'>
+
+                                            Start Attendance Tracking
+                                        </button>
+                                    )}
+
                                     <button onClick={() => { downloadExcel(extractSubject(formData.unit)) }} className='p-4 text-sm md:text-md bg-blue-500 text-white font-bold py-2 rounded-md hover:bg-blue-600 transition duration-200'>Download Excel Sheet </button>
                                 </div>
                             </div>
@@ -213,7 +297,6 @@ const ProxyAttendance = () => {
                                         <th className="py-2 px-4 border-b">School</th>
                                         <th className="py-2 px-4 border-b">Semester</th>
                                         <th className="py-2 px-4 border-b">Division</th>
-                                        <th className="py-2 px-4 border-b">Attendance Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -226,7 +309,6 @@ const ProxyAttendance = () => {
                                             <td className="py-2 px-4 border-b">{student.school}</td>
                                             <td className="py-2 px-4 border-b">{student.semester}</td>
                                             <td className="py-2 px-4 border-b">{student.division}</td>
-                                            <td className="py-2 px-4 border-b">Present / Absent</td>
                                         </tr>
                                     ))}
                                 </tbody>

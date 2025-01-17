@@ -130,3 +130,77 @@ export const PASSWORD_RESET_REQUEST_TEMPLATE = `
 </body>
 </html>
 `;
+
+
+export const PROXY_NOTIFICATION_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proxy Lecture Notification</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background: linear-gradient(to right, #FF9800, #F57C00); padding: 20px; text-align: center;">
+    <h1 style="color: white; margin: 0;">Proxy Lecture Notification</h1>
+  </div>
+  <div style="background-color: #f9f9f9; padding: 20px; border-radius: 0 0 5px 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <p>Hello {HODName},</p>
+    <p>We want to notify you that a proxy lecture has been arranged in your department. Below are the details:</p>
+
+    <!-- General Details -->
+    <h3 style="color: #4CAF50;">General Details</h3>
+    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+      <tr>
+        <td style="padding: 8px; border: 1px solid #ddd;">Subject</td>
+        <td style="padding: 8px; border: 1px solid #ddd;">{subject}</td>
+      </tr>
+      <tr>
+        <td style="padding: 8px; border: 1px solid #ddd;">Subject Code</td>
+        <td style="padding: 8px; border: 1px solid #ddd;">{subjectCode}</td>
+      </tr>
+      <tr>
+        <td style="padding: 8px; border: 1px solid #ddd;">Date</td>
+        <td style="padding: 8px; border: 1px solid #ddd;">${new Date().toLocaleDateString()}</td>
+      </tr>
+    </table>
+
+    <!-- Proxy Faculty Details -->
+    <h3 style="color: #4CAF50;">Proxy Faculty Details</h3>
+    <div style="display: flex; align-items: center; gap: 40px; margin-bottom: 20px;">
+      <div style="width: 100px; height: 100px">  
+        <img src="{proxyFacultyPhoto}" alt="Proxy Faculty Photo" style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 10%;">
+      </div>
+      <div style="margin-left: 10px;">
+        <p><strong>Name:</strong> {proxyFacultyName}</p>
+        <p><strong>Email:</strong> {proxyFacultyEmail}</p>
+        <p><strong>Mobile:</strong> {proxyFacultyMobile}</p>
+        <p><strong>Branch:</strong> {proxyFacultyBranch}</p>
+      </div>
+    </div>
+
+    <!-- Original Faculty Details -->
+    <h3 style="color: #4CAF50;">Original Faculty Details</h3>
+    <div style="display: flex; align-items: center; gap: 40px; margin-bottom: 20px;">
+      <div style="width: 100px; height: 100px">
+        <img src="{originalFacultyPhoto}" alt="Original Faculty Photo" style="width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 10%;">
+      </div>
+      <div style="margin-left: 10px;">
+        <p><strong>Name:</strong> {originalFacultyName}</p>
+        <p><strong>Email:</strong> {originalFacultyEmail}</p>
+        <p><strong>Mobile:</strong> {originalFacultyMobile}</p>
+        <p><strong>Branch:</strong> {originalFacultyBranch}</p>
+      </div>
+    </div>
+
+    <p>Please review this proxy arrangement for approval or further actions.</p>
+    <p>If you have any questions or need further details, feel free to contact us.</p>
+    <p>Best regards,<br>Edu Track Team</p>
+  </div>
+  <div style="text-align: center; margin-top: 20px; color: #888; font-size: 0.8em;">
+    <p>This is an automated message, please do not reply to this email.</p>
+  </div>
+</body>
+</html>
+`;
+

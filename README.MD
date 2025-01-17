@@ -1,19 +1,22 @@
 Things Done In Latest Commit: ✅
 
-1. Done Some of the UI changes Like improved UI and also added the dark mode functionality for some of the remaining pages
+1. Some minor changes like realtime reflection of changing of the status of the student. Instead of realtime we have gone with displaying the list of students to the faculty ✅
+2. HOD have the Facility where they can easily assign the duty and revoke or remove the duty or acccess of the duty from the faculty (We will be combining the both permissions and units for HOD so that they can easily revoke the duties or units from the given faculty or assigned faculty...) ✅
+3. when faculty is taking proxy then sending email to HOD of that departemnt with all details of fauclty is remaining ✅
 
 Things Remaining: ⚠ ⚠
-1. Some minor changes like realtime reflection of changing of the status of the student.
-2. Confused wheather to store the attendance data or just simply able to download the excel file
-3. when faculty is taking proxy then sending email to HOD of that departemnt with all details of fauclty is remaining
-4. Wheather to store the subject school level smester and division in the excel file
-5. improving the naming of the file and it should include... (subject school level smester and division and possibly date also)
-6. HOD should have the Facility where they can easily assign the duty and revoke or remove the duty or acccess of the duty from the faculty
-7. Student side is still remaining.
+
+1. Confused wheather to store the attendance data or just simply able to download the excel file
+
+2. Wheather to store the subject school level smester and division in the excel file
+3. improving the naming of the file and it should include... (subject school level smester and division and possibly date also)
+4. Student side is still remaining.
+
+5. When the attendance of the student is done then one message or text message should be fired on the parents phone number that your student is present on this time slot and this date...
 
 ====== Below Feature Is Optional (And this will be time based if time will be there then this feature will be made) ======
 
-8. HOD and Faculty can share the files (system is remaining) like chat app or classroom type where only faculty or HOD can share the files... like assignments or question bank....
+6. HOD and Faculty can share the files (system is remaining) like chat app or classroom type where only faculty or HOD can share the files... like assignments or question bank....
 
 Things Done in this project till now: 🚀✌
 1. Faculty, HOD and Student can register and login via 2FA (Email OTP)
@@ -22,3 +25,5 @@ Things Done in this project till now: 🚀✌
 4. Faculty and HOD can take the proxy of other faculty
 5. Faculty and HOD can download the excel file of the attendance (one time only)
 6. Faculty and HOD can see the report of the student and can download them as a pdf format...
+7. When Faculty or HOD is taking proxy of another faculty then email is sent to the department HOD that this faculty is taking the proxy...
+8. HOD have their Control Panel so that they can easily revoke the duties assigned to the faculty...

@@ -1,6 +1,6 @@
 import { mailtrapClient, sender } from "./mailtrapConfig.js"
 import dotenv from 'dotenv';
-import { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, MARKS_REQUEST_APPROVAL } from "./emailTemplates.js";
+import { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, MARKS_REQUEST_APPROVAL, PROXY_NOTIFICATION_TEMPLATE } from "./emailTemplates.js";
 
 dotenv.config()
 
@@ -23,7 +23,7 @@ export const sendVerificationEmail = async (email, verificationToken) => {
     }
 }
 
-export const sendPermissionAprovedForMarksInputting = async (email, examType, subject, level, branch, school,semester,division, HODName) => {
+export const sendPermissionAprovedForMarksInputting = async (email, examType, subject, level, branch, school, semester, division, HODName) => {
     const recipient = [{ email }];
     try {
         const response = await mailtrapClient.send({
@@ -96,5 +96,37 @@ export const sendResetSuccessEmail = async (email) => {
         console.log("Password reset email sent successfully")
     } catch (error) {
         console.error('Error while sending the Password reset email: ', error)
+    }
+}
+
+export const sendEmailToHOD = async (data) => {
+    const { unit, faculty, hod, proxyTakingFaculty, subject } = data;
+    const recipient = [{ email: hod.email }];
+    try {
+        const response = await mailtrapClient.send({
+            from: sender,
+            to: recipient,
+            subject: 'Proxy has been taken in your department',
+            html: PROXY_NOTIFICATION_TEMPLATE
+                .replace("{HODName}", hod?.fullName || "N/A")
+                .replace("{originalFacultyName}", faculty?.fullName || "N/A")
+                .replace("{originalFacultyEmail}", faculty?.email || "N/A")
+                .replace("{originalFacultyMobile}", faculty?.mobile || "N/A")
+                .replace("{originalFacultyBranch}", faculty?.branch || "N/A")
+                .replace("{originalFacultyPhoto}", faculty?.profilePhoto || "N/A")
+                .replace("{proxyFacultyName}", proxyTakingFaculty?.fullName || "N/A")
+                .replace("{proxyFacultyEmail}", proxyTakingFaculty?.email || "N/A")
+                .replace("{proxyFacultyMobile}", proxyTakingFaculty?.mobile || "N/A")
+                .replace("{proxyFacultyPhoto}", proxyTakingFaculty?.profilePhoto || "N/A")
+                .replace("{proxyFacultyBranch}", proxyTakingFaculty?.branch || "N/A")
+                .replace("{subject}", subject?.SubjectName || "N/A")
+                .replace("{subjectCode}", subject?.SubjectCode || "N/A")
+        });
+        if (response) {
+            console.log("Proxy Email sent to HOD successfully");
+        }
+    } catch (error) {
+        console.error('Error while sending the email: ', error);
+        throw new Error('Error while sending the email');
     }
 }
