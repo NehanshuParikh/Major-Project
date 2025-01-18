@@ -1,12 +1,22 @@
 import path from 'path'
+import { fileURLToPath } from 'url';
+import fs from 'fs';
 import { Unit } from '../models/unitModel.js';
 import { Subject } from '../models/subjectModel.js';
 import { Staff } from '../models/staffModel.js';
 import { sendEmailToHOD } from '../mailtrap/emails.js';
+import os from 'os';
+
+// Define __dirname for ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const projectRoot = path.resolve(__dirname, '../../'); // Go up two levels to reach "Diploma Major Project"
+
+
 
 export const startAttendance = async (req, res) => {
     const { level, school, branch, semester, division, subject } = req.body;
-
+    console.log(level, school, branch, semester, division, subject)
     // Validate all fields
     if (!level || !school || !branch || !semester || !division || !subject) {
         return res.status(400).json({ message: 'All attendance details are required!' });
@@ -37,39 +47,45 @@ export const startAttendance = async (req, res) => {
 
 export const downloadExcel = async (req, res) => {
     try {
-        const { school, branch, semester, division, subject } = req.query;
+        const { school, branch, semester, division, subject, level } = req.query;
 
-        if (!school || !branch || !semester || !division || !subject) {
-            return res.status(400).send('All parameters (school, branch, semester, division, subject) are required.');
+        // Validate query parameters
+        if (!school || !branch || !semester || !division || !subject || !level) {
+            return res.status(400).send('All parameters (school, branch, semester, division, subject, level) are required.');
         }
 
-        // Construct sanitized file name
-        const sanitizedFileName = [
-            school,
-            branch,
-            semester,
-            division,
-            subject
-        ]
-            .map((param) => param.replace(/[^a-zA-Z0-9_\- ]/g, '_'))
-            .join('_');
-        const filePath = path.join(__dirname, 'AttendanceSystem', `${sanitizedFileName}.xlsx`);
+        // Flask backend URL
+        const flaskUrl = `http://localhost:5001/download-excel`;
+        console.log('[DEBUG] Forwarding request to Flask backend:', flaskUrl);
 
-        // Check if the file exists
-        if (!fs.existsSync(filePath)) {
-            return res.status(404).send(`File '${sanitizedFileName}.xlsx' not found.`);
+        // Forward request to Flask backend
+        const queryParams = new URLSearchParams({ school, branch, semester, division, subject, level }).toString();
+        const flaskResponse = await fetch(`${flaskUrl}?${queryParams}`);
+
+        // Check if Flask backend returned an error
+        if (!flaskResponse.ok) {
+            console.error('[ERROR] Flask backend returned an error:', flaskResponse.statusText);
+            const errorText = await flaskResponse.text();
+            return res.status(flaskResponse.status).send(errorText);
         }
 
-        // Send the file for download
-        res.download(filePath, `${sanitizedFileName}.xlsx`, (err) => {
-            if (err) {
-                console.error('Error downloading the file:', err);
-                res.status(500).send('Could not download the file.');
-            }
-        });
+        // Extract headers from Flask response
+        const contentDisposition = flaskResponse.headers.get('content-disposition');
+        const contentType = flaskResponse.headers.get('content-type');
+        const fileName = contentDisposition?.split('filename=')[1]?.replace(/"/g, '') || 'download.xlsx';
+
+        console.log(`[DEBUG] File received from Flask backend: ${fileName}`);
+
+        // Set headers for the client response
+        res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+        res.setHeader('Content-Type', contentType);
+
+        // Pipe the Flask response (file stream) to the client
+        flaskResponse.body.pipe(res);
+
     } catch (error) {
-        console.error('Unexpected error:', error);
-        res.status(500).send('An unexpected error occurred.');
+        console.error('[ERROR] Error in forwarding request to Flask backend:', error.message);
+        res.status(500).send('An unexpected error occurred while downloading the file.');
     }
 };
 
@@ -124,6 +140,29 @@ export const proxyMailToHOD = async (req, res) => {
     } catch (error) {
         console.error('Error in proxyMailToHOD:', error);
         res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
+
+export const checkExcelFile = async (req, res) => {
+    console.log('Checking file existence...');
+
+    // Extract the details from the request body
+    const { level, school, branch, semester, division, subject } = req.body;
+
+    // Correct BASE_DIR path to point to the AttendanceSystem folder
+    const BASE_DIR = path.join(__dirname, '..', '..', 'AttendanceSystem'); // Goes two levels up to the root and then to AttendanceSystem folder
+
+    // Construct the file name based on the given format
+    const fileName = `${level}_${school}_${branch}_Semester ${semester}_Division ${division}_${subject}.xlsx`;
+    const filePath = path.join(BASE_DIR, fileName); // Combine the BASE_DIR with the file name
+
+    // Check if the file exists
+    if (fs.existsSync(filePath)) {
+        console.log(`File found: ${filePath}`);
+        return res.json({ fileExists: true });
+    } else {
+        console.log(`File not found: ${filePath}`);
+        return res.json({ fileExists: false });
     }
 };
 

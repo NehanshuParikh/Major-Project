@@ -6,6 +6,7 @@ const ProxyAttendance = () => {
     const [units, setUnits] = useState([]);
     const [students, setStudents] = useState([]); // State to store student data
     const [isLoading, setIsLoading] = useState(false)
+    const [downloadDisabled, setDownloadDisabled] = useState(false);
     const [formData, setFormData] = useState({
         unit: '',
     });
@@ -68,6 +69,7 @@ const ProxyAttendance = () => {
         console.log('Selected Unit:', selectedUnit);
 
         try {
+            // Request to get students
             const response = await fetch('http://localhost:5000/api/user/get-particular-unit-students', {
                 method: 'POST',
                 headers: {
@@ -83,6 +85,23 @@ const ProxyAttendance = () => {
                 console.log(data)
                 setStudents(data.students); // Set students data if successful
                 toast.success("Students data fetched successfully");
+
+                // Check if the Excel file exists after fetching students
+                const fileCheckResponse = await fetch('http://localhost:5000/api/attendance/check-file', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(selectedUnit), // Send the same selectedUnit to check file existence
+                });
+
+                const fileCheckData = await fileCheckResponse.json();
+
+                if (fileCheckData.fileExists) {
+                    setDownloadDisabled(false); // Enable download button if file exists
+                } else {
+                    setDownloadDisabled(true); // Disable download button if file does not exist
+                }
             } else {
                 setStudents([]); // Clear students if no data found
                 toast.error(data.message || "No students found");
@@ -92,6 +111,7 @@ const ProxyAttendance = () => {
             toast.error("Failed to fetch students");
         }
     };
+
     const handleProxyMailToHOD = async () => {
 
 
@@ -133,20 +153,33 @@ const ProxyAttendance = () => {
         }
     };
 
-    const startAttendance = async (subject) => {
+    const extractDetails = (unit) => {
+        const unitComponents = unit.split(' - ');
+        return {
+            level: unitComponents[0]?.trim(),
+            school: unitComponents[1]?.trim(),
+            branch: unitComponents[2]?.trim(),
+            semester: unitComponents[3]?.trim(),
+            division: unitComponents[4]?.trim(),
+            subject: unitComponents[5]?.trim(),
+        };
+    };
+
+    const startAttendance = async (attendanceDetails) => {
         try {
             const response = await fetch('http://localhost:5000/api/attendance/start-attendance', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ subject }), // Send subject as JSON
+                body: JSON.stringify(attendanceDetails), // Send subject as JSON
             });
 
             const data = await response.json();
 
             if (response.ok) {
                 console.log("Success:", data.message);
+                setDownloadDisabled(false); // Enable download button after starting attendance
             } else {
                 console.error("Error:", data.message);
             }
@@ -155,44 +188,49 @@ const ProxyAttendance = () => {
         }
     };
 
-    const downloadExcel = async (subject) => {
+    const downloadExcel = async (attendanceDetails) => {
+        const { school, branch, semester, division, subject, level } = attendanceDetails;
+
         try {
-            const response = await fetch(`http://localhost:5001/download-excel?subject=${encodeURIComponent(subject)}`, {
+            // Construct query parameters
+            const params = new URLSearchParams({
+                school: branch,
+                branch: school,
+                semester,
+                division,
+                subject,
+                level,
+            });
+
+            // Fetch the file from Flask backend
+            const response = await fetch(`http://localhost:5001/download-excel?${params.toString()}`, {
                 method: 'GET',
             });
 
             if (!response.ok) {
-                throw new Error('Failed to download file');
+                throw new Error(`Failed to download file: ${response.statusText}`);
             }
 
-            // Convert response to a blob
+            // Get the file name from Content-Disposition header
+            const contentDisposition = response.headers.get('Content-Disposition');
+            const fileNameMatch = contentDisposition?.match(/filename="?([^"]+)"?/);
+            const fileName = fileNameMatch ? fileNameMatch[1] : 'download.xlsx';
+
+            // Create a URL and trigger the download
             const blob = await response.blob();
-
-            // Create a temporary URL for the blob
             const url = window.URL.createObjectURL(blob);
-
-            // Create a temporary link and trigger download
             const link = document.createElement('a');
             link.href = url;
-            link.download = `${subject}.xlsx`; // Dynamically set the filename
+            link.setAttribute('download', fileName);
             document.body.appendChild(link);
             link.click();
-
-            // Clean up the URL and link element
             link.remove();
-            window.URL.revokeObjectURL(url);
+            setDownloadDisabled(true); // Disable download button after downloading the file
         } catch (error) {
-            console.error('Error downloading file:', error);
+            console.error('Error downloading Excel file:', error);
             alert('Failed to download the file.');
         }
     };
-
-    // Function to extract the subject from the selected unit string
-    const extractSubject = (unit) => {
-        const unitComponents = unit.split(' - ');
-        return unitComponents[5]?.trim(); // The subject is the 6th component in the unit string
-    };
-
 
     return (
         <DashboardLayout>
@@ -268,20 +306,32 @@ const ProxyAttendance = () => {
                                             setIsLoading(true); // Disable the button and show "Starting..."
                                             try {
                                                 await handleProxyMailToHOD(); // Wait for handleProxyMailToHOD to complete
-                                                await startAttendance(extractSubject(formData.unit)); // Then start attendance
+                                                const attendanceDetails = extractDetails(formData.unit);
+                                                startAttendance(attendanceDetails);
                                             } catch (error) {
                                                 console.error("Error in handling attendance workflow:", error);
                                             } finally {
                                                 setIsLoading(false); // Re-enable the button
                                             }
                                         }}
-                                        className='p-4 text-sm md:text-md bg-green-500 text-white font-bold py-2 rounded-md hover:bg-green-600 transition duration-200'>
+                                            className='p-4 text-sm md:text-md bg-green-500 text-white font-bold py-2 rounded-md hover:bg-green-600 transition duration-200'>
 
                                             Start Attendance Tracking
                                         </button>
                                     )}
 
-                                    <button onClick={() => { downloadExcel(extractSubject(formData.unit)) }} className='p-4 text-sm md:text-md bg-blue-500 text-white font-bold py-2 rounded-md hover:bg-blue-600 transition duration-200'>Download Excel Sheet </button>
+                                    <button
+                                        onClick={() => {
+                                            const attendanceDetails = extractDetails(formData.unit);
+                                            downloadExcel(attendanceDetails);
+                                        }}
+                                        className={`p-4 text-sm md:text-md font-bold py-2 rounded-md transition duration-200 ${downloadDisabled ? 'bg-blue-200 cursor-not-allowed text-white' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+                                        disabled={downloadDisabled} // Disable the button if downloadDisabled is true
+                                    >
+                                        Download Excel Sheet
+                                    </button>
+
+
                                 </div>
                             </div>
                             <p className="text-red-500 dark:text-red-400">Please note that the file can only be downloaded once. Once the file is downloaded, it will be removed from the server and cannot be accessed again.</p>

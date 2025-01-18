@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 const NormalAttendance = () => {
     const [units, setUnits] = useState([]);
     const [students, setStudents] = useState([]); // State to store student data
+    const [downloadDisabled, setDownloadDisabled] = useState(false);
     const [formData, setFormData] = useState({
         unit: '',
     });
@@ -67,6 +68,7 @@ const NormalAttendance = () => {
         console.log('Selected Unit:', selectedUnit);
 
         try {
+            // Request to get students
             const response = await fetch('http://localhost:5000/api/user/get-particular-unit-students', {
                 method: 'POST',
                 headers: {
@@ -82,6 +84,23 @@ const NormalAttendance = () => {
                 console.log(data)
                 setStudents(data.students); // Set students data if successful
                 toast.success("Students data fetched successfully");
+
+                // Check if the Excel file exists after fetching students
+                const fileCheckResponse = await fetch('http://localhost:5000/api/attendance/check-file', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(selectedUnit), // Send the same selectedUnit to check file existence
+                });
+
+                const fileCheckData = await fileCheckResponse.json();
+
+                if (fileCheckData.fileExists) {
+                    setDownloadDisabled(false); // Enable download button if file exists
+                } else {
+                    setDownloadDisabled(true); // Disable download button if file does not exist
+                }
             } else {
                 setStudents([]); // Clear students if no data found
                 toast.error(data.message || "No students found");
@@ -91,7 +110,6 @@ const NormalAttendance = () => {
             toast.error("Failed to fetch students");
         }
     };
-
 
     const startAttendance = async (attendanceDetails) => {
         try {
@@ -107,6 +125,7 @@ const NormalAttendance = () => {
 
             if (response.ok) {
                 console.log("Success:", data.message);
+                setDownloadDisabled(false); // Enable download button after starting attendance
             } else {
                 console.error("Error:", data.message);
             }
@@ -117,33 +136,49 @@ const NormalAttendance = () => {
 
 
     const downloadExcel = async (attendanceDetails) => {
-        const { school, branch, semester, division, subject } = attendanceDetails;
+        const { school, branch, semester, division, subject, level } = attendanceDetails;
+
         try {
+            // Construct query parameters
             const params = new URLSearchParams({
-                school: branch,  // Assign the correct value
-                branch: school,  // Assign the correct value
+                school: branch,
+                branch: school,
                 semester,
                 division,
                 subject,
+                level,
             });
-            // Perform the fetch request
-            const response = await fetch(`/download-excel?${params.toString()}`, {
+
+            // Fetch the file from Flask backend
+            const response = await fetch(`http://localhost:5001/download-excel?${params.toString()}`, {
                 method: 'GET',
             });
 
+            if (!response.ok) {
+                throw new Error(`Failed to download file: ${response.statusText}`);
+            }
+
+            // Get the file name from Content-Disposition header
+            const contentDisposition = response.headers.get('Content-Disposition');
+            const fileNameMatch = contentDisposition?.match(/filename="?([^"]+)"?/);
+            const fileName = fileNameMatch ? fileNameMatch[1] : 'download.xlsx';
+
             // Create a URL and trigger the download
-            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `${school}_${branch}_${semester}_${division}_${subject}.xlsx`);
+            link.setAttribute('download', fileName);
             document.body.appendChild(link);
             link.click();
             link.remove();
+            setDownloadDisabled(true); // Disable download button after downloading the file
         } catch (error) {
             console.error('Error downloading Excel file:', error);
             alert('Failed to download the file.');
         }
     };
+
 
     const extractDetails = (unit) => {
         const unitComponents = unit.split(' - ');
@@ -210,10 +245,17 @@ const NormalAttendance = () => {
                                         Start Attendance Tracking
                                     </button>
 
-                                    <button onClick={() => {
-                                        const attendanceDetails = extractDetails(formData.unit);
-                                        downloadExcel(attendanceDetails)
-                                    }} className='p-4 text-sm md:text-md bg-blue-500 text-white font-bold py-2 rounded-md hover:bg-blue-600 transition duration-200'>Download Excel Sheet </button>
+                                    <button
+                                        onClick={() => {
+                                            const attendanceDetails = extractDetails(formData.unit);
+                                            downloadExcel(attendanceDetails);
+                                        }}
+                                        className={`p-4 text-sm md:text-md font-bold py-2 rounded-md transition duration-200 ${downloadDisabled ? 'bg-blue-200 cursor-not-allowed text-white' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+                                        disabled={downloadDisabled} // Disable the button if downloadDisabled is true
+                                    >
+                                        Download Excel Sheet
+                                    </button>
+
                                 </div>
                             </div>
                             <p className="text-red-500 dark:text-red-400">Please note that the file can only be downloaded once. Once the file is downloaded, it will be removed from the server and cannot be accessed again.</p>
