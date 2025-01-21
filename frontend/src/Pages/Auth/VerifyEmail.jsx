@@ -36,6 +36,7 @@ const VerifyEmail = () => {
         navigate(`/api/dashboard/student-dashboard`);
       } else {
         navigate(`/api/dashboard/${data.userType}-dashboard`);
+        localStorage.setItem('token', data.token);
       }
     } catch (error) {
       console.error('Error:', error);

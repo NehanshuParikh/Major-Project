@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import './index.css'
+import './Configs/chartConfig.js'
 import './styles/custom.css'; // our custom styles
 import { LoadingProvider } from './Context/LoadingContext.jsx'
 

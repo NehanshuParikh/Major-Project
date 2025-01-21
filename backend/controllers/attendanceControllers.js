@@ -16,9 +16,10 @@ const projectRoot = path.resolve(__dirname, '../../'); // Go up two levels to re
 
 export const startAttendance = async (req, res) => {
     const { level, school, branch, semester, division, subject } = req.body;
-    console.log(level, school, branch, semester, division, subject)
+    const facultyName = req.user.fullName;
+    console.log(level, school, branch, semester, division, subject, facultyName)
     // Validate all fields
-    if (!level || !school || !branch || !semester || !division || !subject) {
+    if (!level || !school || !branch || !semester || !division || !subject || !facultyName) {
         return res.status(400).json({ message: 'All attendance details are required!' });
     }
 
@@ -29,7 +30,7 @@ export const startAttendance = async (req, res) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ level, school, branch, semester, division, subject }),
+            body: JSON.stringify({ level, school, branch, semester, division, subject, facultyName }),
         });
 
         const data = await response.json();

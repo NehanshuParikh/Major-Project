@@ -3,9 +3,9 @@ import { downloadExcel, startAttendance, proxyMailToHOD, checkExcelFile } from '
 import { verifyToken } from '../middleware/verifyToken.js'
 const router = express.Router()
 
-router.post('/start-attendance', startAttendance)
-router.get('/download-excel', downloadExcel);
-router.post('/check-file', checkExcelFile);
+router.post('/start-attendance', verifyToken, startAttendance)
+router.get('/download-excel', verifyToken, downloadExcel);
+router.post('/check-file', verifyToken, checkExcelFile);
 router.post('/proxy-mail-to-hod', verifyToken, proxyMailToHOD)
 
 export default router

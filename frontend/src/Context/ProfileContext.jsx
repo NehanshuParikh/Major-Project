@@ -11,11 +11,13 @@ export const ProfileProvider = ({ children }) => {
 
   const fetchProfileData = async () => {
     try {
+      const token = localStorage.getItem('token')
       const response = await fetch(PROFILE_URL, {
         method: 'GET',
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         }
       });
       const result = await response.json();

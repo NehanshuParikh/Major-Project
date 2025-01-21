@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 import cv2
 from pyzbar.pyzbar import decode
 import openpyxl
-from datetime import datetime
+from datetime import datetime, date
 import winsound
 from flask_cors import CORS
 import os
@@ -12,12 +12,19 @@ import threading
 import time
 import re
 
+from pymongo import MongoClient
+
+# MongoDB connection
+client = MongoClient("mongodb+srv://nehanshuparikh2006:pG1Ts0ZWZMSUKO1A@cluster0.xh9w5.mongodb.net/MajorProject?retryWrites=true&w=majority&appName=Cluster0")  # Replace with your MongoDB URI
+db = client["MajorProject"]  # Database name
+attendance_collection = db["attendances"]  # Collection name
+
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 CORS(app, expose_headers=["Content-Disposition"]) # This will enable CORS for all routes
 
-def initialize_excel(level, school, branch, semester, division, subject):
+def initialize_excel(level, school, branch, semester, division, subject, facultyName):
     # Consistent filename generation
     excel_file = f"{level}_{school}_{branch}_{semester}_{division}_{subject}.xlsx"
 
@@ -29,16 +36,16 @@ def initialize_excel(level, school, branch, semester, division, subject):
         sheet.title = "Attendance"
         sheet.append([
             "User Type", "Enrollment", "Date", "Time",
-            "Level", "Branch", "School", "Semester", "Division", "Subject"
+            "Level", "Branch", "School", "Semester", "Division", "Subject", "Attendance Taken By"
         ])
         workbook.save(excel_file)
 
     return excel_file
 
 
-def mark_attendance(barcode_data, name, level, school, branch, semester, division, subject):
+def mark_attendance(barcode_data, name, level, school, branch, semester, division, subject, facultyName):
     # Generate consistent filename
-    excel_file = initialize_excel(level, school, branch, semester, division, subject)
+    excel_file = initialize_excel(level, school, branch, semester, division, subject, facultyName)
 
     workbook = openpyxl.load_workbook(excel_file)
     sheet = workbook["Attendance"]
@@ -58,14 +65,14 @@ def mark_attendance(barcode_data, name, level, school, branch, semester, divisio
     # Add new entry
     sheet.append([
         name, barcode_data, current_date, current_time,
-        level, branch, school, semester_number, division_number, subject
+        level, branch, school, semester_number, division_number, subject, facultyName
     ])
     workbook.save(excel_file)
     return True
 
 
 # Barcode scanning function that runs in a separate thread
-def scan_barcode_in_thread(level, school, branch, semester, division, subject):
+def scan_barcode_in_thread(level, school, branch, semester, division, subject, facultyName):
     def scan_barcode():
         cap = cv2.VideoCapture(0)  # Open the webcam
         while True:
@@ -76,10 +83,26 @@ def scan_barcode_in_thread(level, school, branch, semester, division, subject):
                 barcode_data = barcode.data.decode('utf-8')
                 # Mark attendance
                 if mark_attendance(
-                    barcode_data, "Student", level, branch, school, semester, division, subject 
+                    barcode_data, "Student", level, branch, school, semester, division, subject , facultyName
                 ):
                     winsound.Beep(1000, 200)  # Success beep
                     print(f"Attendance marked for: {barcode_data}")
+                     # Create attendance document
+                    attendance_data = {
+                        "userType": 'Student',
+                        "enrollment": barcode_data,
+                        "date": date.today().isoformat(),  # Store as ISO date string
+                        "time": datetime.now().strftime("%H:%M:%S"),  # Current time
+                        "level": level,
+                        "branch": branch,
+                        "school": school,
+                        "semester": semester,
+                        "division": division,
+                        "subject": subject,
+                        "attendanceTakenBy": facultyName
+                    }
+                    # Insert into MongoDB
+                    attendance_collection.insert_one(attendance_data)
                 else:
                     winsound.Beep(500, 200)  # Failure beep
                     print(f"Duplicate entry for: {barcode_data}")
@@ -102,13 +125,14 @@ def start_attendance():
     semester = data.get('semester')
     division = data.get('division')
     subject = data.get('subject')
+    facultyName = data.get('facultyName')
 
     # Validate that all required fields are provided
-    if not all([level, school, branch, semester, division, subject]):
+    if not all([level, school, branch, semester, division, subject, facultyName]):
         return jsonify({"message": "All fields are required!"}), 400
 
     # Start the barcode scanning in a thread
-    scan_barcode_in_thread(level, school, branch, semester, division, subject)
+    scan_barcode_in_thread(level, school, branch, semester, division, subject, facultyName)
 
     return jsonify({"message": "Attendance started successfully!"}), 200
 

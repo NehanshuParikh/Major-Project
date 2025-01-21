@@ -219,7 +219,7 @@ const ViewStudentReportSheet = () => {
     <DashboardLayout>
       <label className="text-sm font-medium text-gray-700 dark:text-white">Student Name or ID</label>
       <form onSubmit={handleSubmit} method="post" className='w-full flex items-center justify-start gap-2'>
-        {/* Faculty Name or ID with auto-suggestion */}
+        {/* Student Name or ID with auto-suggestion */}
         <div className='w-10/12'>
           <input
             type="text"

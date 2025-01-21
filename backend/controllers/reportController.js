@@ -3,6 +3,7 @@ import { dirname } from 'path';
 import { Staff } from '../models/staffModel.js';
 import { Student } from '../models/studentModel.js';
 import { Marks } from '../models/marksModel.js';
+import { Attendance } from '../models/attendanceModel.js';
 import { readFile } from 'fs/promises';
 import path from 'path';
 import pdf from 'html-pdf';
@@ -214,3 +215,82 @@ export const viewStudentReportSheet = async (req, res) => {
         return res.status(500).json({ success: false, message: 'Error retrieving report' });
     }
 };
+
+export const viewStudentAttendanceSheet = async (req, res) => {
+    try {
+        const searchQuery = req.query.searchQuery || req.body.searchQuery;
+
+        // Find student
+        const student = await Student.findOne({
+            $or: [
+                { enrollmentId: searchQuery.trim() },
+                { fullName: new RegExp(searchQuery.trim(), 'i') }
+            ]
+        });
+
+        if (!student) {
+            return res.status(404).json({ success: false, message: 'Student not found' });
+        }
+        const allAttendance = await Attendance.find();
+        console.log(allAttendance);
+
+
+        // Modified query to handle date properly
+        const attendance = await Attendance.find({
+            enrollment: student.enrollmentId
+        })
+            .select({
+                userType: 1,
+                enrollment: 1,
+                date: 1,
+                time: 1,
+                level: 1,
+                branch: 1,
+                school: 1,
+                semester: 1,
+                division: 1,
+                subject: 1,
+                attendanceTakenBy: 1
+            })
+            .sort({
+                date: -1,
+                time: -1
+            })
+            .lean(); // Convert to plain JavaScript objects
+
+        console.log('Found attendance records:', JSON.stringify(attendance, null, 2));
+
+        if (attendance.length === 0) {
+            return res.status(404).json({ success: false, message: 'No attendance data found' });
+        }
+
+        // Format dates in the response
+        const formattedAttendance = attendance.map(record => ({
+            ...record,
+            date: new Date(record.date).toISOString().split('T')[0]
+        }));
+
+        const attendanceData = {
+            studentDetails: {
+                name: student.fullName,
+                enrollmentNumber: student.enrollmentId,
+                email: student.email,
+                mobile: student.mobile || 'Not provided',
+                profilePhoto: student.profilePhoto
+            },
+            totalRecords: formattedAttendance.length,
+            attendanceDetails: formattedAttendance
+        };
+
+        return res.status(200).json({
+            success: true,
+            message: 'Attendance sheet retrieved successfully',
+            attendanceData
+        });
+    } catch (error) {
+        console.error('Error details:', error);
+        return res.status(500).json({ success: false, message: 'Error retrieving attendance sheet' });
+    }
+};
+
+

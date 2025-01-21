@@ -34,6 +34,8 @@ import GenerateStudentReport from './Pages/Reports/GenerateStudentReport';
 import ViewStudentReportSheet from './Pages/Reports/ViewStudentReportSheet';
 import ViewUnits from './Pages/Attendance/ViewUnits';
 import HODCentralPanel from './Pages/Dashboard/HODDashboardPages/HODCentralPanel';
+import ViewStudentsAttendance from './Pages/Attendance/ViewStudentsAttendance';
+
 function App() {
   const { loading } = useLoading();
   return (
@@ -67,12 +69,14 @@ function App() {
               <Route path="/api/dashboard/marks-management/permissions/assign-duty" element={<AssigningDuty />} />
               <Route path="/api/dashboard/marks-management/permissions/HOD-viewing-panel" element={<HODManagingDuty />} />
               <Route path="/api/dashboard/marks-management/permissions/Faculty-viewing-panel" element={<FacultyManagingDuty />} />
+              
               <Route path="/api/dashboard/attendance/main-page" element={<HODDashboardAttendance />} />
               <Route path="/api/dashboard/attendance/take/normal-attendance" element={<NormalAttendance />} />
               <Route path="/api/dashboard/attendance/take/proxy-attendance" element={<ProxyAttendance />} />
               <Route path="/api/dashboard/attendance/manage-students" element={<HODDashboardManageStudents />} />
               <Route path="/api/dashboard/attendance/assign-units" element={<HODashboardAssignUnits />} />
               <Route path="/api/dashboard/attendance/view-units" element={<ViewUnits />} />
+              <Route path="/api/dashboard/attendance/view-students-attendance" element={<ViewStudentsAttendance />} />
               
               <Route path="/api/dashboard/hod-central-panel" element={<HODCentralPanel />} />
 

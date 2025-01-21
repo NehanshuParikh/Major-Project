@@ -1,15 +1,12 @@
 Things Done In Latest Commit: ✅
 
-1. Wheather to store the subject school level smester and division in the excel file: 
-    We are able to store UserType Enrollement Date Time Level Branch School Semester Division Subject ✅
-2. improving the naming of the file and it should include... (subject school level smester and division and possibly date also) It is having Level_School_Branch_Semester_Division_Subject ✅
-3. Buttons are disabled if there are no files matching with that unit on the server and becomes active as soon as the files are on the server ✅
+1. Faculty Or HOD can see the attedance of the student via searching the enrollement id or name and they can see via table, pie chart, line chart and bar chart
 
 Things Remaining: ⚠ ⚠
 
-1. Confused wheather to store the attendance data or just simply able to download the excel file
+1. Faculty, HOD can see the students attendance data and can download the report.... (report is optional)
 
-2. Student side is still remaining.
+2. Student side they can see their marks and attendance is still remaining.
 
 3. When the attendance of the student is done then one message or text message should be fired on the parents phone number that your student is present on this time slot and this date...
 
@@ -29,3 +26,4 @@ Student	2201102019	2025-01-18	12:52:00	Diploma	IT	KSET	5	        2	        Web P
 7. Faculty and HOD can see the report of the student and can download them as a pdf format...
 8. When Faculty or HOD is taking proxy of another faculty then email is sent to the department HOD that this faculty is taking the proxy...
 9. HOD have their Control Panel so that they can easily revoke the duties assigned to the faculty...
+10. Faculty and HOD can see the students Attendance Data in many forms (like: table, pie chart, bar chart, line chart)

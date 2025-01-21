@@ -84,12 +84,14 @@ const NormalAttendance = () => {
                 console.log(data)
                 setStudents(data.students); // Set students data if successful
                 toast.success("Students data fetched successfully");
-
+                const token = localStorage.getItem('token');
                 // Check if the Excel file exists after fetching students
                 const fileCheckResponse = await fetch('http://localhost:5000/api/attendance/check-file', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+
                     },
                     body: JSON.stringify(selectedUnit), // Send the same selectedUnit to check file existence
                 });
@@ -112,11 +114,13 @@ const NormalAttendance = () => {
     };
 
     const startAttendance = async (attendanceDetails) => {
+        const token = localStorage.getItem('token');
         try {
             const response = await fetch('http://localhost:5000/api/attendance/start-attendance', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify(attendanceDetails), // Send all attendance details as JSON
             });
@@ -137,7 +141,6 @@ const NormalAttendance = () => {
 
     const downloadExcel = async (attendanceDetails) => {
         const { school, branch, semester, division, subject, level } = attendanceDetails;
-
         try {
             // Construct query parameters
             const params = new URLSearchParams({
@@ -148,10 +151,13 @@ const NormalAttendance = () => {
                 subject,
                 level,
             });
-
+            const token = localStorage.getItem('token');
             // Fetch the file from Flask backend
             const response = await fetch(`http://localhost:5001/download-excel?${params.toString()}`, {
                 method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${token}`, // Attach token in Authorization header
+                },
             });
 
             if (!response.ok) {

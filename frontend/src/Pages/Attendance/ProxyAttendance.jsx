@@ -167,10 +167,13 @@ const ProxyAttendance = () => {
 
     const startAttendance = async (attendanceDetails) => {
         try {
+            const token = localStorage.getItem('token');
+            console.log(token)
             const response = await fetch('http://localhost:5000/api/attendance/start-attendance', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify(attendanceDetails), // Send subject as JSON
             });

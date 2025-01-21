@@ -256,7 +256,8 @@ export const verifyEmail = async (req, res) => {
 
         return res.status(200).json({
             message: 'Verification successful',
-            userType: user.userType
+            userType: user.userType,
+            token: token
         });
     } catch (error) {
         console.error('Error during email verification:', error);
@@ -304,7 +305,8 @@ export const loginVerify = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: 'Login successful',
-            userType: user.userType // Assuming userType exists in both Staff and Student models
+            userType: user.userType, // Assuming userType exists in both Staff and Student models
+            token: token
         });
 
     } catch (error) {

@@ -35,6 +35,7 @@ const LoginVerify = () => {
           navigate(`/api/dashboard/student-dashboard`);
         } else {
           navigate(`/api/dashboard/${data.userType}-dashboard`);
+          localStorage.setItem('token', data.token);
         }
       } else {
         setLoading(false) // stopping the loader

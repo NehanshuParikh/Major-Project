@@ -1,62 +1,63 @@
 import mongoose from "mongoose";
 
-const attendanceSchema = mongoose.Schema({
-    facultyId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Staff',
+const attendanceSchema = new mongoose.Schema(
+  {
+    userType: {
+      type: String,
+      required: true,
     },
-    hodId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Staff',
-    },
-    branch: {
-        type: String,
-        required: true
-    },
-    level: {
-        type: String,
-        required: true
-    },
-    school: {
-        type: String,
-        required: true
-    },
-    division: {
-        type: Number,
-        required: true
-    },
-    semester: {
-        type: Number,
-        required: true
+    enrollment: {
+      type: String,
+      required: true, // Student/Faculty enrollment or unique identifier
     },
     date: {
-        type: Date,
-        required: true
+      type: Date,
+      required: true,
     },
-    lectureTimeFrom: {
-        type: String,
-        required: true
+    time: {
+      type: String, // Store time as a string, e.g., "13:30:12"
+      required: true,
     },
-    lectureTimeTo: {
-        type: String,
-        required: true
+    level: {
+      type: String,
+      required: true, // e.g., Diploma, Degree, etc.
+      lowercase: true,
     },
-    lectureType: {
-        type: String,
-        enum: ['Lab','Lecture']
+    branch: {
+      type: String,
+      required: true, // e.g., IT, CS, etc.
+      uppercase: true,
     },
-    proxied: {
-        type: Boolean,
-        required: true
+    school: {
+      type: String,
+      required: true, // e.g., KSET
+      uppercase: true,
     },
-    presentStudents: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Student'
-    }],
-    absentStudents: [{
-        type:mongoose.Schema.Types.ObjectId,
-        ref: 'Student'
-    }]
-});
+    semester: {
+      type: String,
+      required: true, // e.g., 5
+    },
+    division: {
+      type: String,
+      required: true, // e.g., 2 (Division or Section)
+    },
+    subject: {
+      type: String,
+      required: true, // e.g., Web Programming
+    },
+    attendanceTakenBy: {
+      type: String,
+      required: true, // Faculty name
+    },
+  },
+  {
+    timestamps: true, // Adds createdAt and updatedAt timestamps
+  }
+);
 
-export const Attendance = mongoose.model('Attendance', attendanceSchema);
+// // Create indexes for faster query filtering
+// attendanceSchema.index({ enrollment: 1, date: 1 }); // Query by student and date
+// attendanceSchema.index({ branch: 1, semester: 1, division: 1, subject: 1 }); // Query by class details
+
+
+export const Attendance = mongoose.model("Attendance", attendanceSchema);

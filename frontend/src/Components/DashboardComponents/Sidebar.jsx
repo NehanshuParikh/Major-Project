@@ -122,7 +122,9 @@ const Sidebar = ({ isOpen, toggleSidebar, userType }) => {
                   <Link to={`${BASEURL}/dashboard/attendance/main-page`} className="block text-white p-2 hover:bg-slate-700 rounded">
                     Take Attendance
                   </Link>
-
+                  <Link to={`${BASEURL}/dashboard/attendance/view-students-attendance`} className="block text-white p-2 hover:bg-slate-700 rounded">
+                    View Students's Attendance
+                  </Link>
                 </div>
               )}
 
@@ -203,6 +205,9 @@ const Sidebar = ({ isOpen, toggleSidebar, userType }) => {
                   </Link>
                   <Link to={`${BASEURL}/dashboard/attendance/main-page`} className="block text-white p-2 hover:bg-slate-700 rounded">
                     Take Attendance
+                  </Link>
+                  <Link to={`${BASEURL}/dashboard/attendance/view-students-attendance`} className="block text-white p-2 hover:bg-slate-700 rounded">
+                    View Students's Attendance
                   </Link>
 
                 </div>
