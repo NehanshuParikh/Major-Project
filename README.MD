@@ -1,10 +1,12 @@
 Things Done In Latest Commit: ✅
 
-1. Faculty Or HOD can see the attedance of the student via searching the enrollement id or name and they can see via table, pie chart, line chart and bar chart
+1. Faculty Or HOD can see the attedance of the student via searching the enrollement id or name and we have removed the chart concept instead we have come up with the calendar concept all the filters are also done.
+
+2. Basic Report Downloading is being done via the Faculty and HOD...
 
 Things Remaining: ⚠ ⚠
 
-1. Faculty, HOD can see the students attendance data and can download the report.... (report is optional)
+1. Still the report should have the filtered data while downloading it... and have some styling plus it should have proper profile photo and everything which means still styling is needed to be done. 
 
 2. Student side they can see their marks and attendance is still remaining.
 
@@ -26,4 +28,4 @@ Student	2201102019	2025-01-18	12:52:00	Diploma	IT	KSET	5	        2	        Web P
 7. Faculty and HOD can see the report of the student and can download them as a pdf format...
 8. When Faculty or HOD is taking proxy of another faculty then email is sent to the department HOD that this faculty is taking the proxy...
 9. HOD have their Control Panel so that they can easily revoke the duties assigned to the faculty...
-10. Faculty and HOD can see the students Attendance Data in many forms (like: table, pie chart, bar chart, line chart)
+10. Faculty and HOD can see the students Attendance Data (in a tabular and in calendar way) and filter and download the report as well.
