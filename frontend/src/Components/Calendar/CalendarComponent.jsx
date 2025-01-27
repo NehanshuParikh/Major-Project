@@ -30,15 +30,19 @@ const CalendarComponent = ({ attendanceData }) => {
   // Format filtered attendance data to mark dates
   const attendanceDates = filteredAttendanceData.map((record) => record.date);
 
-  // Check if a date has attendance
-  const isPresent = (date) =>
-    attendanceDates.includes(date.toISOString().split("T")[0]);
-
-  // Handle date selection
-  const handleDateClick = (date) => {
-    setSelectedDate(date.toISOString().split("T")[0]);
+  const isPresent = (date) => {
+    // Adjust the selected date to remove the time part, convert to local date (no timezone shifts)
+    const formattedDate = new Date(date).toLocaleDateString("en-CA"); // 'en-CA' gives 'YYYY-MM-DD' format
+    return attendanceDates.includes(formattedDate);
   };
-
+  const handleDateClick = (date) => {
+    // Format the selected date to 'YYYY-MM-DD' (using 'en-CA' locale)
+    const formattedDate = date.toLocaleDateString("en-CA"); // This ensures 'YYYY-MM-DD' format
+  
+    // Set the formatted date as the selected date
+    setSelectedDate(formattedDate);
+  };
+  
   // Get attendance records for the selected date
   const recordsForSelectedDate = filteredAttendanceData.filter(
     (record) => record.date === selectedDate
@@ -128,9 +132,10 @@ const CalendarComponent = ({ attendanceData }) => {
         <div className="calendar-container bg-gray-100 dark:bg-gray-800 p-4 rounded w-full overflow-auto flex items-center justify-center flex-col">
           <Calendar
             onChange={handleDateClick}
-            tileClassName={({ date }) =>
-              isPresent(date) ? "bg-green-200 dark:bg-green-700" : ""
-            }
+            tileClassName={({ date }) => {
+              // Ensure that the date being passed to isPresent is correctly formatted
+              return isPresent(date) ? "bg-green-500 text-white dark:bg-green-500" : "";
+            }}
           />
           {/* Message for small screens */}
           <p className="text-red-500 text-sm mt-2">
@@ -141,7 +146,7 @@ const CalendarComponent = ({ attendanceData }) => {
       </div>
 
       {/* Attendance Records for the Selected Date */}
-      <div className="records-container bg-gray-100 dark:bg-gray-800 p-4 my-4 rounded flex-1 max-w-full overflow-auto">
+      <div className="records-container bg-gray-100 dark:bg-gray-800 dark:text-white p-4 my-4 rounded flex-1 max-w-full overflow-auto">
         <h3 className="text-lg font-semibold mb-2">
           {selectedDate
             ? `Attendance Records for ${selectedDate} (${selectedSubject}, ${selectedSemester}, ${selectedDivision})`

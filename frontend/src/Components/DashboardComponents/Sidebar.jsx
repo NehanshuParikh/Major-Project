@@ -71,11 +71,11 @@ const Sidebar = ({ isOpen, toggleSidebar, userType }) => {
 
         {userType === 'Student' && (
           <>
-            <Link to="/student-resources" className="block text-white p-2 mb-4 hover:bg-slate-700 rounded">
-              <FaBook className="inline-block mr-2" /> Student Resources
+            <Link to={`${BASEURL}/dashboard/marks-section/student-view-marksheet`}  className="block text-white p-2 mb-4 hover:bg-slate-700 rounded">
+              <FaBook className="inline-block mr-2" /> Marks Section
             </Link>
-            <Link to="/attendance-management" className="block text-white p-2 mb-4 hover:bg-slate-700 rounded">
-              <FaClipboardList className="inline-block mr-2" /> Attendance Management
+            <Link to={`${BASEURL}/dashboard/attendance-section/student-view-attendance-sheet`} className="block text-white p-2 mb-4 hover:bg-slate-700 rounded">
+              <FaClipboardList className="inline-block mr-2" /> Attendance Section
             </Link>
           </>
         )}

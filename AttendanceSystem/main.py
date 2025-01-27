@@ -11,6 +11,9 @@ import os
 import threading
 import time
 import re
+import requests
+from bson import ObjectId  # Import for MongoDB ObjectId
+
 
 from pymongo import MongoClient
 
@@ -70,6 +73,40 @@ def mark_attendance(barcode_data, name, level, school, branch, semester, divisio
     workbook.save(excel_file)
     return True
 
+def convert_objectid_to_str(data):
+    """Recursively converts ObjectId in a dictionary or list to string."""
+    if isinstance(data, dict):
+        return {key: convert_objectid_to_str(value) for key, value in data.items()}
+    elif isinstance(data, list):
+        return [convert_objectid_to_str(item) for item in data]
+    elif isinstance(data, ObjectId):
+        return str(data)
+    else:
+        return data
+
+
+
+def send_attendance_emails(attendance_data):
+    # Send email to parents
+    # Convert ObjectId to string in attendance data
+    sanitized_data = convert_objectid_to_str(attendance_data)
+    print(sanitized_data)
+    # JavaScript backend URL
+    backend_url = "http://localhost:5000/api/attendance/attendance-mail-to-parents"  # Replace with your backend URL
+    try:
+        # Send a POST request with attendance data
+        response = requests.post(backend_url, json=sanitized_data)
+
+        # Check response status
+        if response.status_code == 200:
+            print("Emails sent successfully!")
+        else:
+            print(f"Failed to send emails. Status Code: {response.status_code}, Response: {response.text}")
+
+    except Exception as e:
+        print(f"An error occurred while sending attendance emails: {str(e)}")
+
+
 
 # Barcode scanning function that runs in a separate thread
 def scan_barcode_in_thread(level, school, branch, semester, division, subject, facultyName):
@@ -111,6 +148,8 @@ def scan_barcode_in_thread(level, school, branch, semester, division, subject, f
                 break
         cap.release()  # Release the webcam
         cv2.destroyAllWindows()  # Close the OpenCV window
+        # Send email to parents after the scanner is turned off
+        send_attendance_emails(attendance_data)
 
     # Start scanning in a separate thread
     Thread(target=scan_barcode, daemon=True).start()

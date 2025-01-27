@@ -204,3 +204,101 @@ export const PROXY_NOTIFICATION_TEMPLATE = `
 </html>
 `;
 
+
+export const ATTENDANCE_REPORT_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance Report</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background: linear-gradient(to right, #4CAF50, #2E7D32); padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+    <h1 style="color: white; margin: 0;">Attendance Report</h1>
+  </div>
+  <div style="background-color: #f9f9f9; padding: 20px; border-radius: 0 0 8px 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <p>Dear Parents,</p>
+    <p>We are sharing the attendance report of your child. Please find the details below:</p>
+
+    <!-- Attendance Overview -->
+    <div style="text-align: center; margin-bottom: 30px;">
+      <h3 style="color: #4CAF50; margin: 0;">Attendance Marked on {attendanceDate} at {attendanceTime}</h3>
+      <p style="color: #555; font-size: 1.1em; font-weight: bold;">Attendance was marked by {facultyFullName} for the subject <span style="color: #FF9800;">{subject}</span>.</p>
+    </div>
+
+    <!-- Student Profile -->
+    <h3>Student Details: </h3>
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px;">
+      <div style="text-align: center; margin-right: 20px;">
+        <img src="{studentProfilePhoto}" alt="Student Profile Photo" style="border-radius: 10%; width: 100px; height: 100px; object-fit: cover;">
+      </div>
+      <div style="flex-grow: 1; width: 100%;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Student Name</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">{studentName}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Roll Number</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">{studentEnrollmentId}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Branch</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">{studentBranch}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">School</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">{studentSchool}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Semester</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">{studentSemester}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Division</td>
+            <td style="padding: 8px; border: 1px solid #ddd;">{studentDivision}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Parent Contact -->
+    <div style="margin-bottom: 30px;">
+      <h3 style="color: #FF9800;">Parent Contact Information</h3>
+      <p><strong>Father's Email:</strong> {fatherEmail}</p>
+      <p><strong>Mother's Email:</strong> {motherEmail}</p>
+    </div>
+
+    <!-- Attendance Details -->
+    <div style="margin-bottom: 20px;">
+      <h3 style="color: #4CAF50;">Attendance Details</h3>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Attendance Taken By:</td>
+          <td style="padding: 8px; border: 1px solid #ddd;">{facultyFullName}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Date</td>
+          <td style="padding: 8px; border: 1px solid #ddd;">{attendanceDate}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px; border: 1px solid #ddd; font-weight: bold;">Time</td>
+          <td style="padding: 8px; border: 1px solid #ddd;">{attendanceTime}</td>
+        </tr>
+      </table>
+    </div>
+
+    <p>We encourage regular attendance and appreciate your efforts in supporting your child's education.</p>
+    <p>If you have any concerns or questions, feel free to contact us.</p>
+    <p>Best regards,<br>Edu Track Team</p>
+  </div>
+  <div style="text-align: center; margin-top: 20px; color: #888; font-size: 0.8em;">
+    <p>This is an automated message, please do not reply to this email.</p>
+  </div>
+</body>
+</html>
+
+`;
+
+

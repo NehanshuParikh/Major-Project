@@ -1,20 +1,16 @@
 Things Done In Latest Commit: ✅
 
-1. Faculty Or HOD can see the attedance of the student via searching the enrollement id or name and we have removed the chart concept instead we have come up with the calendar concept all the filters are also done.
+1. Report Improved as now the report consists of all the records of the student's attendance and as well as the calendar componenet and also the total presents against each subject
 
-2. Basic Report Downloading is being done via the Faculty and HOD...
+2. Student side they can see their marks and attendance.
+
+3. When the attendance of the student is done then one Email is sent to the father email address that your student is present on this time slot and this date...
 
 Things Remaining: ⚠ ⚠
 
-1. Still the report should have the filtered data while downloading it... and have some styling plus it should have proper profile photo and everything which means still styling is needed to be done. 
-
-2. Student side they can see their marks and attendance is still remaining.
-
-3. When the attendance of the student is done then one message or text message should be fired on the parents phone number that your student is present on this time slot and this date...
-
 ====== Below Feature Is Optional (And this will be time based if time will be there then this feature will be made) ======
 
-4. HOD and Faculty can share the files (system is remaining) like chat app or classroom type where only faculty or HOD can share the files... like assignments or question bank....
+1. HOD and Faculty can share the files (system is remaining) like chat app or classroom type where only faculty or HOD can share the files... like assignments or question bank....
 
 Things Done in this project till now: 🚀✌
 1. Faculty, HOD and Student can register and login via 2FA (Email OTP)
@@ -29,3 +25,5 @@ Student	2201102019	2025-01-18	12:52:00	Diploma	IT	KSET	5	        2	        Web P
 8. When Faculty or HOD is taking proxy of another faculty then email is sent to the department HOD that this faculty is taking the proxy...
 9. HOD have their Control Panel so that they can easily revoke the duties assigned to the faculty...
 10. Faculty and HOD can see the students Attendance Data (in a tabular and in calendar way) and filter and download the report as well.
+11. On the Student side they can see their marks and attendance.
+12. When the attendance of the student is done then one Email is sent to the father email address that your student is present on this time slot and this date...

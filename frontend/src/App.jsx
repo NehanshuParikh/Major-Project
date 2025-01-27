@@ -35,6 +35,8 @@ import ViewStudentReportSheet from './Pages/Reports/ViewStudentReportSheet';
 import ViewUnits from './Pages/Attendance/ViewUnits';
 import HODCentralPanel from './Pages/Dashboard/HODDashboardPages/HODCentralPanel';
 import ViewStudentsAttendance from './Pages/Attendance/ViewStudentsAttendance';
+import StudentViewAttendancesheet from './Pages/Attendance/StudentViewAttendanceSheet';
+import StudentViewMarksheet from './Pages/MarksManagement/StudentViewMarksheet';
 
 function App() {
   const { loading } = useLoading();
@@ -83,6 +85,8 @@ function App() {
               <Route path="/api/dashboard/report/generate-student-report" element={<GenerateStudentReport />} />
               <Route path="/api/dashboard/report/view-student-report" element={<ViewStudentReportSheet />} />
 
+              <Route path="/api/dashboard/attendance-section/student-view-attendance-sheet" element={<StudentViewAttendancesheet />} />
+              <Route path="/api/dashboard/marks-section/student-view-marksheet" element={<StudentViewMarksheet />} />
 
           
 

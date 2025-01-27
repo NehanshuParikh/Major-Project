@@ -1,6 +1,6 @@
 import { mailtrapClient, sender } from "./mailtrapConfig.js"
 import dotenv from 'dotenv';
-import { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, MARKS_REQUEST_APPROVAL, PROXY_NOTIFICATION_TEMPLATE } from "./emailTemplates.js";
+import { VERIFICATION_EMAIL_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE, MARKS_REQUEST_APPROVAL, PROXY_NOTIFICATION_TEMPLATE, ATTENDANCE_REPORT_TEMPLATE } from "./emailTemplates.js";
 
 dotenv.config()
 
@@ -130,3 +130,42 @@ export const sendEmailToHOD = async (data) => {
         throw new Error('Error while sending the email');
     }
 }
+
+export const sendAttendanceToParents = async (data) => {
+    const { student, attendance, other } = data;
+    // Properly structured array of recipient objects
+    const recipient = [
+        { email: student.fatherEmail || "N/A" }
+    ];
+    try {
+        const response = await mailtrapClient.send({
+            from: sender,
+            to: recipient,
+            subject: `${student.fullName} Attendance Report`,
+            html: ATTENDANCE_REPORT_TEMPLATE
+                .replace("{studentName}", student.fullName || "N/A")
+                .replace("{studentProfilePhoto}", student.profilePhoto || "N/A")
+                .replace("{studentEnrollmentId}", student.enrollmentId || "N/A")
+                .replace("{studentBranch}", student.branch || "N/A")
+                .replace("{studentSchool}", student.school || "N/A")
+                .replace("{studentSemester}", student.semester || "N/A")
+                .replace("{studentDivision}", student.division || "N/A")
+                .replace("{subject}", other.subject || "N/A")
+                .replace("{facultyFullName}", other.facultyFullName || "N/A")
+                .replace("{attendanceDate}", attendance.date || "N/A")
+                .replace("{attendanceTime}", attendance.time || "N/A")
+                .replace("{fatherEmail}", student.fatherEmail || "N/A")
+                .replace("{motherEmail}", student.motherEmail || "N/A")
+                .replace("{facultyFullName}", other.facultyFullName || "N/A")
+                .replace("{attendanceDate}", attendance.date || "N/A")
+                .replace("{attendanceTime}", attendance.time || "N/A")
+    });
+    if (response) {
+        console.log("Attendance Email sent to parents successfully");
+    }
+}
+    catch (error) {
+    console.error('Error while sending the email: ', error);
+    throw new Error('Error while sending the email');
+}
+    }

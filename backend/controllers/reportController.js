@@ -231,10 +231,6 @@ export const viewStudentAttendanceSheet = async (req, res) => {
         if (!student) {
             return res.status(404).json({ success: false, message: 'Student not found' });
         }
-        const allAttendance = await Attendance.find();
-        console.log(allAttendance);
-
-
         // Modified query to handle date properly
         const attendance = await Attendance.find({
             enrollment: student.enrollmentId

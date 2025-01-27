@@ -19,6 +19,8 @@ const ViewStudentReportSheet = () => {
     profilePhoto: '',
   });
 
+  const [isDownloading, setIsDownloading] = useState(false)
+
   const [marksDetails, setMarksDetails] = useState([]);
 
   const examTypes = ['mid-sem-1', 'mid-sem-2', 'external'];
@@ -181,6 +183,8 @@ const ViewStudentReportSheet = () => {
       return;
     }
 
+    setIsDownloading(true);
+
     const token = localStorage.getItem('token');
     const searchQuery = encodeURIComponent(query);
     console.log('Encoded Search Query:', searchQuery);
@@ -206,13 +210,16 @@ const ViewStudentReportSheet = () => {
         document.body.appendChild(link);
         link.click();
         link.remove();
+        setIsDownloading(false);
       } else {
         console.error('Failed to download report:', response.statusText);
         alert('Failed to download the report. Please try again.');
+        setIsDownloading(false);
       }
     } catch (error) {
       console.error('Error downloading report:', error);
       alert('An error occurred while downloading the report.');
+      setIsDownloading(false);
     }
   };
   return (
@@ -333,7 +340,15 @@ const ViewStudentReportSheet = () => {
 
           <div className="w-full flex items-center justify-between">
             <h2 className="text-xl font-bold mb-4 text-gray-700 dark:text-white">Student Report</h2>
-            <button onClick={(e) => handleDownloadButton(e, details.enrollmentNumber)} className=" w-auto inline-flex justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">Download as PDF</button>
+            <button
+      onClick={(e) => handleDownloadButton(e, details.enrollmentNumber)}
+      disabled={isDownloading} // Disable button while loading
+      className={`w-auto inline-flex justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white ${
+        isDownloading ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+      }`}
+    >
+      {isDownloading ? 'Downloading...' : 'Download as PDF'}
+    </button>
           </div>
           <div className="flex items-center gap-4 mb-4">
             <img

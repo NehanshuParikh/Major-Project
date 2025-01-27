@@ -95,7 +95,7 @@ const HODCentralPanel = () => {
             toast.error('No valid token found');
             return;
         }
-    
+
         try {
             const response = await fetch(`${BASEURL}/units/delete/${id}`, {
                 method: 'DELETE',
@@ -105,21 +105,21 @@ const HODCentralPanel = () => {
                 },
                 credentials: 'include',
             });
-    
+
             if (!response.ok) {
                 throw new Error('Failed To Delete! Try Again');
             }
-    
+
             toast.success('Record Deleted successfully');
             // Refetch data after deletion
             fetchDuties();
-            fetchUnitsAssignedByHOD(); 
+            fetchUnitsAssignedByHOD();
         } catch (error) {
             console.error('Error deleting the record:', error);
             toast.error(error.message);
         }
     };
-    
+
     return (
         <DashboardLayout>
             <h1 className="text-3xl font-bold text-center dark:text-white">HOD Central Panel</h1>
@@ -159,10 +159,12 @@ const HODCentralPanel = () => {
                                             </span>
                                         </td>
                                         <td className="py-2 px-4 border-b">
-                                            {calculateDaysRemaining(duty.expiresAt)} days
+                                            {calculateDaysRemaining(duty.expiresAt) <= 0
+                                                ? 'Expired'
+                                                : `${calculateDaysRemaining(duty.expiresAt)} days`}
                                         </td>
                                         <td className="py-2 px-4 border-b cursor-pointer">
-                                            <button onClick={()=>{ handleDelete(duty._id) }  } className='flex items-center justify-center bg-red-500 text-white p-2 gap-2 rounded-lg'>{<FaTrash />} Revoke </button>
+                                            <button onClick={() => { handleDelete(duty._id) }} className='flex items-center justify-center bg-red-500 text-white p-2 gap-2 rounded-lg'>{<FaTrash />} Revoke </button>
                                         </td>
                                     </tr>
                                 ))}
@@ -211,7 +213,7 @@ const HODCentralPanel = () => {
                                         <td className="py-2 px-4 border-b dark:border-b-gray-500">{unit.Subject.SubjectName}</td>
                                         <td className="py-2 px-4 border-b dark:border-b-gray-500">{unit.Subject.SubjectCode}</td>
                                         <td className="py-2 px-4 border-b cursor-pointer">
-                                        <button onClick={()=>{ handleDelete(duty._id) }  } className='flex items-center justify-center bg-red-500 text-white p-2 gap-2 rounded-lg'>{<FaTrash />} Revoke </button>
+                                            <button onClick={() => { handleDelete(duty._id) }} className='flex items-center justify-center bg-red-500 text-white p-2 gap-2 rounded-lg'>{<FaTrash />} Revoke </button>
                                         </td>
                                     </tr>
                                 ))}

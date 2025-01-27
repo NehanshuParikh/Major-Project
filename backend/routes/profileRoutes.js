@@ -24,14 +24,14 @@ router.get('/profile', verifyToken, async (req, res) => {
           email: user.email,
           mobileNumber: user.mobile,
           userType: user.userType,
-          profilePhoto: user.profilePhoto
+          profilePhoto: user.profilePhoto,
         }
       });
     }
 
     // If not found in Staff, check if the user is a student
-    user = await Student.findById(req.user._id).select('enrollmentId fullName email mobile profilePhoto');
-
+    user = await Student.findById(req.user._id).select('enrollmentId fullName email mobile profilePhoto parentsInfo');
+    console.log(user)
     if (user) {
       // If user is found in Student, return their details without userType
       return res.status(200).json({
@@ -43,9 +43,16 @@ router.get('/profile', verifyToken, async (req, res) => {
           mobileNumber: user.mobile,
           userType: 'Student', // Set userType manually as it's not stored in Student model
           profilePhoto: user.profilePhoto,
+          parentsInfo: {
+            fathersName: user.parentsInfo.fatherName, // Corrected field name
+            mothersName: user.parentsInfo.motherName, // Corrected field name
+            fathersEmail: user.parentsInfo.fatherEmail, // Corrected field name
+            mothersEmail: user.parentsInfo.motherEmail // Corrected field name
+          }
         }
       });
     }
+    
 
     // If user is not found in either model
     return res.status(404).json({ success: false, message: 'User not found' });
@@ -153,14 +160,15 @@ router.get('/user-info', verifyToken, (req, res) => {
 // route for editing profile
 router.post('/edit-profile', verifyToken, async (req, res) => {
   try {
-    const { email, mobile, fullName } = req.body;
+    const { email, mobile, fullName, fathersName, mothersName, fathersEmail, mothersEmail } = req.body;
     console.log(req.body)
     console.log(req.user._id)
+    console.log(req.user)
     let updatedProfile;
     if (req.user.userType === 'Staff') {
       updatedProfile = await Staff.findByIdAndUpdate(req.user._id, { fullName, mobile, email }, { new: true });
     } else {
-      updatedProfile = await Student.findByIdAndUpdate(req.user._id, { fullName, mobile, email }, { new: true });
+      updatedProfile = await Student.findByIdAndUpdate(req.user._id, { fullName, mobile, email, parentsInfo: { fatherName: fathersName, motherName: mothersName, fatherEmail: fathersEmail, motherEmail: mothersEmail } }, { new: true });
     }
 
     if (!updatedProfile) {
@@ -169,7 +177,7 @@ router.post('/edit-profile', verifyToken, async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: `${req.user.userType} Profile updated successfully`,
+      message: `${req.user.userType || 'Student'} Profile updated successfully`,
       updatedProfile
     });
   } catch (error) {

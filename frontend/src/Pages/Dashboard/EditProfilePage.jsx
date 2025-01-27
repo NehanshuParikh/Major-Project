@@ -11,6 +11,10 @@ const EditProfileForm = () => {
         userId: '',
         fullName: '',
         profilePhoto: null,
+        fathersName: '',
+        mothersName: '',
+        fathersEmail: '',
+        mothersEmail: '',
     });
 
     useEffect(() => {
@@ -22,7 +26,11 @@ const EditProfileForm = () => {
                 fullName: profileData.fullName || '',
                 mobile: profileData.mobileNumber || '',
                 profilePhoto: profileData.profilePhoto || null, // Display current photo if available
-            });
+                fathersName: profileData.parentsInfo?.fathersName || '',
+                mothersName: profileData.parentsInfo?.mothersName || '',
+                fathersEmail: profileData.parentsInfo?.fathersEmail || '',
+                mothersEmail: profileData.parentsInfo?.mothersEmail || '',
+            });      
         }
     }, [profileData]);
 
@@ -81,7 +89,7 @@ const EditProfileForm = () => {
 
     return (
         <DashboardLayout>
-            <div className="flex justify-center items-center h-screen bg-gray-100 ">
+            <div className="flex justify-center items-center bg-gray-100 ">
                 <form
                     onSubmit={handleSubmit}
                     className="w-full lg:mt-0 mt-32 max-w-lg bg-white p-8 rounded-lg shadow-lg"
@@ -184,7 +192,74 @@ const EditProfileForm = () => {
                         />
                     </div>
 
-
+                    {(profileData.userType === 'Student') && (
+                        <>
+                            <div className="w-full flex items-center justify-center gap-4">
+                                {/* Fathers Name */}
+                                <div className="mb-4">
+                                    <label htmlFor="fathersName" className="block text-gray-700">
+                                        Father's Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="fathersName"
+                                        name="fathersName"
+                                        value={formData.fathersName}
+                                        onChange={handleInputChange}
+                                        placeholder="Father's Name"
+                                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                {/* Mother's Name */}
+                                <div className="mb-4">
+                                    <label htmlFor="mothersName" className="block text-gray-700">
+                                        Mother's Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="mothersName"
+                                        name="mothersName"
+                                        value={formData.mothersName}
+                                        onChange={handleInputChange}
+                                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="Mother's Name"
+                                    />
+                                </div>
+                            </div>
+                            <div className="w-full flex items-center justify-center gap-4">
+                                {/* Fathers Email */}
+                                <div className="mb-4">
+                                    <label htmlFor="fathersEmail" className="block text-gray-700">
+                                        Father's Email
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="fathersEmail"
+                                        name="fathersEmail"
+                                        value={formData.fathersEmail}
+                                        onChange={handleInputChange}
+                                        placeholder="Enter your Father's email Address"
+                                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                                {/* Mother's Email */}
+                                <div className="mb-4">
+                                    <label htmlFor="mothersEmail" className="block text-gray-700">
+                                        Mother's Email
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="mothersEmail"
+                                        name="mothersEmail"
+                                        value={formData.mothersEmail}
+                                        onChange={handleInputChange}
+                                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="Enter your Mother's email Address"
+                                    />
+                                </div>
+                            </div>
+                        </>
+                    )}
 
                     {/* Submit Button */}
                     <button

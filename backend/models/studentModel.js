@@ -66,6 +66,26 @@ const studentSchema = mongoose.Schema({
     level: {
         type: String,
         required: true
+    },
+    parentsInfo: {
+        fatherName: {
+            type: String,
+        },
+        fatherMobile: {
+            type: String,
+        },
+        fatherEmail: {
+            type: String,
+        },
+        motherName: {
+            type: String,
+        },
+        motherMobile: {
+            type: String,
+        },
+        motherEmail: {
+            type: String,
+        },
     }
 },{ timestamps: true });
 

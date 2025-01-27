@@ -4,8 +4,9 @@ import fs from 'fs';
 import { Unit } from '../models/unitModel.js';
 import { Subject } from '../models/subjectModel.js';
 import { Staff } from '../models/staffModel.js';
-import { sendEmailToHOD } from '../mailtrap/emails.js';
+import { sendAttendanceToParents, sendEmailToHOD } from '../mailtrap/emails.js';
 import os from 'os';
+import { Student } from '../models/studentModel.js';
 
 // Define __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -166,5 +167,66 @@ export const checkExcelFile = async (req, res) => {
         return res.json({ fileExists: false });
     }
 };
+
+export const attendanceMailToParents = async (req, res) => {
+    const attendanceData = req.body;
+
+    try {
+        let studentsData = [];
+        // Check if the data is an array (multiple students) or a single object
+        if (Array.isArray(attendanceData)) {
+            console.log('Received attendance data for multiple students:');
+            studentsData = attendanceData;
+        } else {
+            console.log('Received attendance data for a single student:');
+            studentsData = [attendanceData]; // Convert single object to array for uniform processing
+        }
+
+        // Fetch parent emails for each student
+        const emailDataArray = [];
+        for (const record of studentsData) {
+            const student = await Student.findOne({enrollmentId: record.enrollment}) // Fetch student by ID
+            if (!student || !student.parentsInfo || !student.parentsInfo.fatherEmail) {
+                console.warn(`No parent email found for student ID: ${record.enrollment}`);
+                continue; // Skip if no parent email is found
+            }
+
+            // Prepare data for email sending
+            emailDataArray.push({
+                student: {
+                    fullName: student.fullName,
+                    profilePhoto: student.profilePhoto,
+                    enrollmentId: student.enrollmentId,
+                    branch: student.branch,
+                    school: student.school,
+                    semester: student.semester,
+                    division: student.division,
+                    fatherEmail: student.parentsInfo.fatherEmail,
+                    motherEmail: student.parentsInfo.motherEmail
+                },
+                other:{
+                    facultyFullName: record.attendanceTakenBy,
+                    subject: record.subject,
+                },
+                attendance: {
+                    date: record.date,
+                    time: record.time,
+                },
+            });
+        }
+
+        // Send emails to all parents
+        for (const emailData of emailDataArray) {
+            console.log(emailData)
+            await sendAttendanceToParents(emailData);
+        }
+
+        res.status(200).send("Attendance emails sent successfully to all parents.");
+    } catch (error) {
+        console.error("Error in attendanceMailToParents: ", error);
+        res.status(500).send("An error occurred while sending attendance emails.");
+    }
+};
+
 
 
