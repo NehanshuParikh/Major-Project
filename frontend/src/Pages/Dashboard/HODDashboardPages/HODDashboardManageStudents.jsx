@@ -32,7 +32,7 @@ const HODDashboardManageStudents = () => {
     if (loading) {
         return (
             <DashboardLayout>
-                <div>Loading...</div>
+                <div className='text-black dark:text-white'>Loading...</div>
             </DashboardLayout>
 
         )

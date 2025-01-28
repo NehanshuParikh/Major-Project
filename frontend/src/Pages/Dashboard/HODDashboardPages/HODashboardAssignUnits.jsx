@@ -140,6 +140,8 @@ const HODashboardAssignUnits = () => {
             const data = await response.json();
             if (data.success) {
                 toast.success('Unit Created & Allocated Successfully');
+                setFormData('');
+                console.log(formData)
             } else {
                 toast.error(data.message);
             }
@@ -176,7 +178,7 @@ const HODashboardAssignUnits = () => {
                                         suggestions.map((faculty) => (
                                             <li
                                                 key={faculty._id}
-                                                className="p-2 hover:bg-gray-200 cursor-pointer"
+                                                className="p-2 hover:bg-gray-200 hover:dark:bg-gray-700 cursor-pointer"
                                                 onClick={() => handleSelectSuggestion(faculty)}
                                             >
                                                 {faculty.fullName} ({faculty.userId})
@@ -282,7 +284,7 @@ const HODashboardAssignUnits = () => {
                                         subjectSuggestions.map((subject) => (
                                             <li
                                                 key={subject._id}
-                                                className="p-2 hover:bg-gray-200 cursor-pointer"
+                                                className="p-2 hover:bg-gray-200 hover:dark:bg-gray-700 cursor-pointer"
                                                 onClick={() => handleSelectSubjectSuggestion(subject)}
                                             >
                                                 {subject.SubjectName} ({subject.SubjectCode})

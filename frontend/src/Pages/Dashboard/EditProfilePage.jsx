@@ -82,23 +82,23 @@ const EditProfileForm = () => {
     if (!profileData) {
         return (
             <DashboardLayout>
-                <div>Profile data not available</div>
+                <div className='text-black dark:text-white'>Profile data not available</div>
             </DashboardLayout>
         );
     }
 
     return (
         <DashboardLayout>
-            <div className="flex justify-center items-center bg-gray-100 ">
+            <div className="flex justify-center items-center bg-gray-100 dark:bg-[#1A222C]">
                 <form
                     onSubmit={handleSubmit}
-                    className="w-full lg:mt-0 mt-32 max-w-lg bg-white p-8 rounded-lg shadow-lg"
+                    className="w-full my-12 mx-2 max-w-lg bg-white dark:bg-gray-800 dark:text-white p-8 rounded-lg shadow-lg"
                 >
                     <h2 className='text-xl font-semi-bold mb-4'>User Profile:</h2>
                     {/* Profile Photo */}
                     <div className="flex justify-center items-center mb-6 flex-col gap-2">
                         <label htmlFor="profilePhoto" className="cursor-pointer">
-                            <div className="w-32 h-32 overflow-hidden border-4 border-gray-200">
+                            <div className="w-32 h-32 overflow-hidden border-4 border-gray-200 dark:border-gray-800">
                                 <img
                                     src={formData.profilePhoto}
                                     alt="Profile"
@@ -106,7 +106,7 @@ const EditProfileForm = () => {
                                 />
                             </div>
                         </label>
-                        <p className='text-red-500 text-sm text-center'>NOTE: This photo is used for attendance. Contact HOD/Admin for changing the photo. Inform higher authorities if any details are updated here to avoid incorrect records.</p>
+                        <p className='text-red-500 dark:text-red-400 text-sm text-justify'>NOTE: This photo is used for attendance. Contact HOD/Admin for changing the photo. Inform higher authorities if any details are updated here to avoid incorrect records.</p>
                     </div>
                     {/* the below profile photo is with changing the profile pic so if we want to change the profile pic then uncomment below code */}
                     {/* Profile Photo */}
@@ -138,40 +138,40 @@ const EditProfileForm = () => {
                     <div className="w-full flex items-center justify-center gap-4">
                         {/* Full Name */}
                         <div className="mb-4">
-                            <label htmlFor="fullName" className="block text-gray-700">Full Name</label>
+                            <label htmlFor="fullName" className="block text-gray-700 dark:text-white">Full Name</label>
                             <input
                                 type="text"
                                 id="fullName"
                                 name="fullName"
                                 value={formData.fullName}
                                 onChange={handleInputChange}
-                                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800"
                             />
                         </div>
                         {/* Mobile */}
                         <div className="mb-4">
-                            <label htmlFor="mobile" className="block text-gray-700">Mobile</label>
+                            <label htmlFor="mobile" className="block text-gray-700 dark:text-white">Mobile</label>
                             <input
                                 type="number"
                                 id="mobile"
                                 name="mobile"
                                 value={formData.mobile}
                                 onChange={handleInputChange}
-                                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800"
                                 placeholder="Enter your email"
                             />
                         </div>
                     </div>
                     {/* Email */}
                     <div className="mb-4">
-                        <label htmlFor="email" className="block text-gray-700">Email</label>
+                        <label htmlFor="email" className="block text-gray-700 dark:text-white">Email</label>
                         <input
                             type="email"
                             id="email"
                             name="email"
                             value={formData.email}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800"
                             placeholder="Enter your email"
                         />
                     </div>
@@ -179,14 +179,14 @@ const EditProfileForm = () => {
 
                     {/* User ID */}
                     <div className="mb-4">
-                        <label htmlFor="userId" className="block text-gray-700">User ID</label>
+                        <label htmlFor="userId" className="block text-gray-700 dark:text-white">User ID</label>
                         <input
                             type="text"
                             id="userId"
                             name="userId"
                             value={formData.userId}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800"
                             placeholder="Enter your User ID"
                             readOnly
                         />
@@ -197,7 +197,7 @@ const EditProfileForm = () => {
                             <div className="w-full flex items-center justify-center gap-4">
                                 {/* Fathers Name */}
                                 <div className="mb-4">
-                                    <label htmlFor="fathersName" className="block text-gray-700">
+                                    <label htmlFor="fathersName" className="block text-gray-700 dark:text-white">
                                         Father's Name
                                     </label>
                                     <input
@@ -207,12 +207,12 @@ const EditProfileForm = () => {
                                         value={formData.fathersName}
                                         onChange={handleInputChange}
                                         placeholder="Father's Name"
-                                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800"
                                     />
                                 </div>
                                 {/* Mother's Name */}
                                 <div className="mb-4">
-                                    <label htmlFor="mothersName" className="block text-gray-700">
+                                    <label htmlFor="mothersName" className="block text-gray-700 dark:text-white">
                                         Mother's Name
                                     </label>
                                     <input
@@ -221,7 +221,7 @@ const EditProfileForm = () => {
                                         name="mothersName"
                                         value={formData.mothersName}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800"
                                         placeholder="Mother's Name"
                                     />
                                 </div>
@@ -229,7 +229,7 @@ const EditProfileForm = () => {
                             <div className="w-full flex items-center justify-center gap-4">
                                 {/* Fathers Email */}
                                 <div className="mb-4">
-                                    <label htmlFor="fathersEmail" className="block text-gray-700">
+                                    <label htmlFor="fathersEmail" className="block text-gray-700 dark:text-white">
                                         Father's Email
                                     </label>
                                     <input
@@ -239,12 +239,12 @@ const EditProfileForm = () => {
                                         value={formData.fathersEmail}
                                         onChange={handleInputChange}
                                         placeholder="Enter your Father's email Address"
-                                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800"
                                     />
                                 </div>
                                 {/* Mother's Email */}
                                 <div className="mb-4">
-                                    <label htmlFor="mothersEmail" className="block text-gray-700">
+                                    <label htmlFor="mothersEmail" className="block text-gray-700 dark:text-white">
                                         Mother's Email
                                     </label>
                                     <input
@@ -253,7 +253,7 @@ const EditProfileForm = () => {
                                         name="mothersEmail"
                                         value={formData.mothersEmail}
                                         onChange={handleInputChange}
-                                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800"
                                         placeholder="Enter your Mother's email Address"
                                     />
                                 </div>

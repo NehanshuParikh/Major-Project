@@ -3,6 +3,10 @@ import DashboardLayout from '../../Components/DashboardComponents/DashboardLayou
 import { toast } from 'react-hot-toast';
 import { FaDownload } from 'react-icons/fa';
 import CalendarComponent from '../../Components/Calendar/CalendarComponent';
+import 'react-calendar/dist/Calendar.css';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import html2canvas from "html2canvas";
 
 const PROFILE_URL = 'http://localhost:5000/api/user/profile'; // Backend API
 const BASEURL = 'http://localhost:5000/api'; // Update with your actual base URL
@@ -68,16 +72,125 @@ const StudentViewAttendancesheet = () => {
     fetchProfileData();
   }, []);
 
-  const downloadReport = () => {
-    // Implement download logic here
-    toast.info('Download feature coming soon!');
-  };
 
+  const downloadReport = async () => {
+    try {
+        const doc = new jsPDF('p', 'pt', 'a4');
+        const pageWidth = doc.internal.pageSize.width;
+
+        // Add Title
+        doc.setFontSize(20);
+        doc.text('Student Attendance Report', pageWidth / 2, 40, { align: 'center' });
+
+        // Add Student Details
+        let nextY = 60;
+        if (details.profilePhoto) {
+            const img = new Image();
+            img.src = details.profilePhoto;
+            const imgWidth = 100;
+            const imgHeight = 80;
+            const imgX = 40;
+            const imgY = nextY;
+
+            doc.setDrawColor(0);
+            doc.setLineWidth(1);
+            doc.rect(imgX - 2, imgY - 2, imgWidth + 4, imgHeight + 4);
+            doc.addImage(img, 'JPEG', imgX, imgY, imgWidth, imgHeight);
+
+            doc.setFontSize(12);
+            doc.text(`Name: ${details.name}`, imgX + imgWidth + 20, imgY + 20);
+            doc.text(`Enrollment: ${details.enrollmentNumber}`, imgX + imgWidth + 20, imgY + 40);
+            doc.text(`Email: ${details.email}`, imgX + imgWidth + 20, imgY + 60);
+            doc.text(`Mobile: ${details.mobile || 'Not provided'}`, imgX + imgWidth + 20, imgY + 80);
+
+            nextY = imgY + imgHeight + 20;
+        } else {
+            doc.setFontSize(12);
+            doc.text(`Name: ${details.name}`, 40, nextY);
+            doc.text(`Enrollment: ${details.enrollmentNumber}`, 40, nextY + 20);
+            doc.text(`Email: ${details.email}`, 40, nextY + 40);
+            doc.text(`Mobile: ${details.mobile || 'Not provided'}`, 40, nextY + 60);
+            nextY += 80;
+        }
+
+        nextY += 10;
+        // Add Attendance Summary
+        doc.setFont("helvetica", "bold");
+        doc.text(`Total Attendance Records: ${attendanceData.length}`, 40, nextY);
+        doc.setFont("helvetica", "normal");
+        nextY += 20;
+
+        // Add Attendance Table
+        const tableData = attendanceData.map(record => [
+            new Date(record.date).toLocaleDateString(),
+            record.time,
+            record.subject,
+            record.semester,
+            record.division,
+            record.attendanceTakenBy
+        ]);
+
+        doc.autoTable({
+            startY: nextY,
+            head: [['Date', 'Time', 'Subject', 'Semester', 'Division', 'Taken By']],
+            body: tableData,
+            theme: 'grid',
+            styles: { fontSize: 8 },
+            headStyles: { fillColor: [71, 85, 105] }
+        });
+
+        nextY = doc.lastAutoTable.finalY + 20; // Update Y position after the table
+
+        // Capture Calendar Component
+        const calendarElement = document.getElementById("calendar-component");
+        if (calendarElement) {
+            
+            doc.addPage();
+            doc.setFont("helvetica", "bold");
+            doc.text(`Calendar View:`, 40, 40);
+            doc.setFont("helvetica", "normal");
+            nextY += 10;
+
+            const canvas = await html2canvas(calendarElement); // Render the calendar
+            const calendarImage = canvas.toDataURL("image/jpeg"); // Convert to image
+            doc.addImage(calendarImage, "JPEG", 40, 60, 520, 400); // Add to PDF
+            nextY += 220; // Update Y position
+        } else {
+            console.warn("Calendar component not found!");
+        }
+
+        
+
+        // Add Subject-wise Attendance Summary
+        const subjects = [...new Set(attendanceData.map(record => record.subject))];
+        const subjectWiseCount = subjects.map(subject => {
+            const count = attendanceData.filter(record => record.subject === subject).length;
+            return [subject, count];
+        });
+
+        doc.addPage();
+        doc.text('Subject-wise Attendance Summary', 40, 40);
+
+        doc.autoTable({
+            startY: 60,
+            head: [['Subject', 'Total Present Classes']],
+            body: subjectWiseCount,
+            theme: 'grid',
+            styles: { fontSize: 10 },
+            headStyles: { fillColor: [71, 85, 105] }
+        });
+
+        // Save the PDF
+        doc.save(`${details.enrollmentNumber}_attendance_report.pdf`);
+    } catch (error) {
+        console.error("Error generating report:", error);
+    }
+};
   const visibleData = showAll ? attendanceData : attendanceData.slice(0, 3);
 
   return (
     <DashboardLayout>
-      <div className="mt-8 bg-white dark:bg-gray-900 rounded-lg shadow-md p-6">
+      <div className="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         {loading ? (
           <p className="text-center text-gray-500 dark:text-gray-300">Loading...</p>
         ) : (
@@ -95,13 +208,13 @@ const StudentViewAttendancesheet = () => {
               <div className="w-full">
                 <h3 className="text-lg font-bold text-gray-700 dark:text-white">{details?.name}</h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  <strong>Enrollment:</strong> {details?.userId || 'N/A'}
+                  <strong>Enrollment:</strong> {details?.enrollmentNumber || 'N/A'}
                 </p>
                 <p className="text-gray-600 dark:text-gray-400">
                   <strong>Email:</strong> {details?.email || 'N/A'}
                 </p>
                 <p className="text-gray-600 dark:text-gray-400">
-                  <strong>Mobile:</strong> {details?.mobileNumber || 'Not provided'}
+                  <strong>Mobile:</strong> {details?.mobile || 'Not provided'}
                 </p>
               </div>
             </div>

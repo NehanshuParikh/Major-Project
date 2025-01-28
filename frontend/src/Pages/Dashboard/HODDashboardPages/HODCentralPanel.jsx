@@ -56,6 +56,14 @@ const HODCentralPanel = () => {
         }
     };
 
+    const calculateDaysRemaining = (expiresAt) => {
+        const expirationDate = new Date(expiresAt);
+        const currentDate = new Date();
+        const diffTime = expirationDate - currentDate;
+        return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Convert milliseconds to days
+    };
+
+
     const fetchUnitsAssignedByHOD = async () => {
         if (!token) {
             toast.error('No valid token found');
@@ -67,9 +75,9 @@ const HODCentralPanel = () => {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    Authorization: `Bearer ${token}`,
                 },
-                credentials: 'include'
+                credentials: 'include',
             });
 
             if (!response.ok) {
@@ -84,6 +92,7 @@ const HODCentralPanel = () => {
             toast.error(error.message);
         }
     };
+
     useEffect(() => {
         fetchDuties();
         fetchUnitsAssignedByHOD();
@@ -195,6 +204,7 @@ const HODCentralPanel = () => {
                                     <th className="py-2 px-4 border-b text-left text-gray-600 dark:text-white">Division</th>
                                     <th className="py-2 px-4 border-b text-left text-gray-600 dark:text-white">Subject</th>
                                     <th className="py-2 px-4 border-b text-left text-gray-600 dark:text-white">Code</th>
+                                    <th className="py-2 px-4 border-b text-left text-gray-600 dark:text-white">Expiring In</th>
                                     <th className="py-2 px-4 border-b text-left text-gray-600 dark:text-white">Action</th>
                                 </tr>
                             </thead>
@@ -202,7 +212,11 @@ const HODCentralPanel = () => {
                                 {units.map((unit, index) => (
                                     <tr key={unit._id} className="hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200">
                                         <td className="py-2 px-4 border-b dark:border-b-gray-500">{index + 1}</td>
-                                        <td className="py-2 px-4 border-b dark:border-b-gray-500"><div className="w-20 h-20"><img src={unit.FacultyId.profilePhoto} alt="" srcset="" className='w-full h-full object-cover object-center' /></div></td>
+                                        <td className="py-2 px-4 border-b dark:border-b-gray-500">
+                                            <div className="w-20 h-20">
+                                                <img src={unit.FacultyId.profilePhoto} alt="" className="w-full h-full object-cover object-center" />
+                                            </div>
+                                        </td>
                                         <td className="py-2 px-4 border-b dark:border-b-gray-500">{unit.FacultyId.fullName}</td>
                                         <td className="py-2 px-4 border-b dark:border-b-gray-500">{unit.FacultyId.email}</td>
                                         <td className="py-2 px-4 border-b dark:border-b-gray-500">{unit.FacultyId.mobile}</td>
@@ -212,12 +226,27 @@ const HODCentralPanel = () => {
                                         <td className="py-2 px-4 border-b dark:border-b-gray-500">{unit.Division}</td>
                                         <td className="py-2 px-4 border-b dark:border-b-gray-500">{unit.Subject.SubjectName}</td>
                                         <td className="py-2 px-4 border-b dark:border-b-gray-500">{unit.Subject.SubjectCode}</td>
+                                        <td className="py-2 px-4 border-b dark:border-b-gray-500">
+                                            {calculateDaysRemaining(unit.expiresAt) <= 0 ? (
+                                                <span className="text-red-500">Expired</span>
+                                            ) : (
+                                                `${calculateDaysRemaining(unit.expiresAt)} days`
+                                            )}
+                                        </td>
                                         <td className="py-2 px-4 border-b cursor-pointer">
-                                            <button onClick={() => { handleDelete(duty._id) }} className='flex items-center justify-center bg-red-500 text-white p-2 gap-2 rounded-lg'>{<FaTrash />} Revoke </button>
+                                            <button
+                                                onClick={() => {
+                                                    handleDelete(unit._id);
+                                                }}
+                                                className="flex items-center justify-center bg-red-500 text-white p-2 gap-2 rounded-lg"
+                                            >
+                                                <FaTrash /> Revoke
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
                             </tbody>
+
                         </table>
                     </div>
                 ) : (

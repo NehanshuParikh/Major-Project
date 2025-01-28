@@ -69,7 +69,7 @@ const ViewUnits = () => {
           <p className="dark:text-white">Loading units...</p>
         ) : error ? (
           <p className="text-red-500">{error}</p>
-        ) : units.length === 0 ? (
+        ) : (units && units.length === 0) ? ( // Ensure units is defined before accessing its length
           <p>No units found.</p>
         ) : (
           <table className="table-auto border-collapse border border-gray-300 dark:border-gray-700 dark:text-white w-full">
@@ -86,19 +86,30 @@ const ViewUnits = () => {
               </tr>
             </thead>
             <tbody>
-              {units.map((unit, index) => (
-                <tr key={index} className="hover:bg-gray-200 dark:hover:bg-gray-700">
-                  <td className="border border-gray-300 px-4 py-2 text-sm">{unit.hod.fullName}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-sm">{unit.subject.name} ({unit.subject.code})</td>
-                  <td className="border border-gray-300 px-4 py-2 text-sm">{unit.faculty.fullName}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-sm">{unit.Level}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-sm">{unit.Branch}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-sm">{unit.School}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-sm">{unit.Semester}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-sm">{unit.Division}</td>
+              {units && units.length > 0 ? (
+                units.map((unit, index) => (
+                  <tr key={index} className="hover:bg-gray-200 dark:hover:bg-gray-700">
+                    <td className="border border-gray-300 px-4 py-2 text-sm">{unit.hod?.fullName || 'N/A'}</td>
+                    <td className="border border-gray-300 px-4 py-2 text-sm">
+                      {unit.subject?.name || 'N/A'} ({unit.subject?.code || 'N/A'})
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2 text-sm">{unit.faculty?.fullName || 'N/A'}</td>
+                    <td className="border border-gray-300 px-4 py-2 text-sm">{unit.Level || 'N/A'}</td>
+                    <td className="border border-gray-300 px-4 py-2 text-sm">{unit.Branch || 'N/A'}</td>
+                    <td className="border border-gray-300 px-4 py-2 text-sm">{unit.School || 'N/A'}</td>
+                    <td className="border border-gray-300 px-4 py-2 text-sm">{unit.Semester || 'N/A'}</td>
+                    <td className="border border-gray-300 px-4 py-2 text-sm">{unit.Division || 'N/A'}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="8" className="text-center border border-gray-300 px-4 py-2 text-sm">
+                    No units found. HOD will assign you the unit very soon...
+                  </td>
                 </tr>
-              ))}
+              )}
             </tbody>
+
           </table>
         )}
       </div>

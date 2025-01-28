@@ -1,10 +1,6 @@
 Things Done In Latest Commit: ✅
 
-1. Report Improved as now the report consists of all the records of the student's attendance and as well as the calendar componenet and also the total presents against each subject
-
-2. Student side they can see their marks and attendance.
-
-3. When the attendance of the student is done then one Email is sent to the father email address that your student is present on this time slot and this date...
+1. Some Minor Bug Fixes and now all screens are working for both light and dark modes
 
 Things Remaining: ⚠ ⚠
 
