@@ -1,6 +1,6 @@
 Things Done In Latest Commit: ✅
 
-1. Some Minor Bug Fixes and now all screens are working for both light and dark modes
+1. Designed and made the index.html or the landing page...
 
 Things Remaining: ⚠ ⚠
 
