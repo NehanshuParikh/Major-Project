@@ -24,3 +24,5 @@ Student	2201102019	2025-01-18	12:52:00	Diploma	IT	KSET	5	        2	        Web P
 11. On the Student side they can see their marks and attendance.
 12. When the attendance of the student is done then one Email is sent to the father email address that your student is present on this time slot and this date...
 13. Internet real time speed and status is shown
+14. Faculty and HOD have Gemini AI as a helper to quickly find out whether the student was present in that particular subject or not on that particular date by entering its enrollment number.
+15. AI can do rest all works like an ordinary AI but also it will fetch our database as well.

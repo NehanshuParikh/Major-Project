@@ -3,7 +3,7 @@ import { FaBook, FaClipboardList, FaChartBar, FaChevronDown, FaChevronUp, FaHome
 import placeholderImage from '../../Assets/images/profile_placeholder.png'; // Default images
 import { Link } from 'react-router-dom';
 import ProfileContext from '../../Context/ProfileContext'; // Import ProfileContext
-
+import AIButton from '../AIComponents/AIButton'; // Import AIButton component
 const BASEURL = 'http://localhost:5173/api';
 
 const Sidebar = ({ isOpen, toggleSidebar, userType }) => {
@@ -152,6 +152,8 @@ const Sidebar = ({ isOpen, toggleSidebar, userType }) => {
               )}
 
             </div>
+
+            <AIButton />
           </>
         )}
 
@@ -240,6 +242,9 @@ const Sidebar = ({ isOpen, toggleSidebar, userType }) => {
               <FaBook className="inline-block mr-2" /> Student Resources
             </Link>
 
+            <AIButton />
+
+          
           </>
         )}
 
