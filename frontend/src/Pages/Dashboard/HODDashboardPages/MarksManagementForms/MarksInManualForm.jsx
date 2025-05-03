@@ -64,7 +64,9 @@ const MarksInManualForm = () => {
                 toast.success(responseData.message);
                 // Redirect to marks input page after successful form submission
                 // Implement the redirection logic here
-                Navigate(`/api/dashboard/marks-management/addmarks/manually/input`)
+                localStorage.setItem("marksMetaData", JSON.stringify(data));
+                Navigate(`/api/dashboard/marks-management/addmarks/manually/input`);
+                
             } else {
                 toast.error(responseData.message || 'An error occurred');
             }

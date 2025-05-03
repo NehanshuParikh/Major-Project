@@ -3,6 +3,7 @@ import { marksEntry, setExamTypeSubjectBranchDivision, uploadMarksSheet } from '
 import multer from 'multer'
 import { verifyToken } from '../middleware/verifyToken.js'
 import { assignDuty, viewAssignedDuties, viewFacultyDuties } from '../controllers/permissionController.js'
+import { Student } from '../models/studentModel.js'
 const router = express.Router()
 const upload = multer({ dest: "uploads/" })  // 'uploads' is at the same level as our server entry point
 
@@ -40,5 +41,24 @@ router.delete('/hod/assigned-duty/:id', async (req, res) => {
 router.post('/setExamTypeSubjectBranchDivision', verifyToken, setExamTypeSubjectBranchDivision)
 router.post('/marksEntry', verifyToken, marksEntry)
 router.post('/uploadMarksSheet', verifyToken, upload.single('file'), uploadMarksSheet)
+// In routes/marksManagement.js
+router.post('/getStudentsByClass', verifyToken, async (req, res) => {
+    const { branch, level, school, division, semester } = req.body;
+    console.log("reqBody: ",req.body)
+    try {
+        const students = await Student.find({
+            branch,
+            level,
+            school,
+            division: Number(division),
+            semester: Number(semester),
+        }).select('_id fullName enrollmentId'); // select relevant fields
+        console.log(students)
+        res.status(200).json({ students });
+    } catch (error) {
+        console.error('Error fetching students:', error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
 
 export default router

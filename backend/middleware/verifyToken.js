@@ -16,9 +16,9 @@ export const verifyToken = async (req, res, next) => {
         }
     }
 
-    // Log where the token is coming from for debugging
-    console.log("Token from cookies:", req.cookies.token);
-    console.log("Token from headers:", req.headers['authorization']);
+    // // Log where the token is coming from for debugging
+    // console.log("Token from cookies:", req.cookies.token);
+    // console.log("Token from headers:", req.headers['authorization']);
 
     // If no token is found, return an error
     if (!token) {

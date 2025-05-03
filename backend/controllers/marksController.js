@@ -73,25 +73,18 @@ export const setExamTypeSubjectBranchDivision = async (req, res) => {
 };
 
 export const marksEntry = async (req, res) => {
-    const { studentId, marks } = req.body;
+    const marksArray = req.body.marks; // Expecting an array of { studentId, marks }
 
-    // Get exam type and subject from cookies
-    const examType = req.cookies.examType;
-    const subject = req.cookies.subject;
-    const branch = req.cookies.branch;
-    const division = req.cookies.division;
-    const level = req.cookies.level;
-    const school = req.cookies.school;
-    const semester = req.cookies.semester;
-    const facultyId = req.user.userId; // Get faculty ID from the token
+    // Get exam and class info from cookies
+    const { examType, subject, branch, division, level, school, semester } = req.cookies;
+    const facultyId = req.user.userId;
 
-    // Ensure exam type and subject are set
     if (!examType || !subject) {
         return res.status(400).json({ message: 'Exam type or subject not selected' });
     }
 
     try {
-        // Check if there is an existing permission granted by the HOD
+        // Check permission first
         const permission = await Permission.findOne({
             facultyId,
             examType,
@@ -107,47 +100,46 @@ export const marksEntry = async (req, res) => {
             return res.status(403).json({ message: 'No permission found for entering marks' });
         }
 
-        // Create a new marks entry
-        const marksEntry = new Marks({
-            marksId: `${studentId}-Sem-${semester}-${subject}-${examType}-${level}-${branch}-${school}`,
-            studentId,
-            marks,
-            examType,
-            subject,
-            level,
-            branch,
-            division,
-            school,
-            semester
-        });
+        // Insert all marks
+        const savedEntries = [];
 
-        await marksEntry.save();
+        for (const entry of marksArray) {
+            const { studentId, marks } = entry;
 
-        // Update permission status to "Completed" and set marksSubmitted to true
-        await Permission.findOneAndUpdate(
-            {
-                facultyId,
+            const newMark = new Marks({
+                marksId: `${studentId}-Sem-${semester}-${subject}-${examType}-${level}-${branch}-${school}`,
+                studentId,
+                marks,
                 examType,
                 subject,
-                semester,
+                level,
                 branch,
                 division,
-                level,
-                school
-            },
-            {
-                status: 'Completed', // Update status to "Completed"
-                marksSubmitted: true  // Set marksSubmitted to true
-            },
+                school,
+                semester
+            });
+
+            const saved = await newMark.save();
+            savedEntries.push(saved);
+        }
+
+        // Update permission status
+        await Permission.findOneAndUpdate(
+            { facultyId, examType, subject, semester, branch, division, level, school },
+            { status: 'Completed', marksSubmitted: true },
             { new: true }
         );
 
-        res.status(201).json({ message: 'Marks entered successfully, status updated to Completed', marksEntry });
+        res.status(201).json({
+            message: 'All marks entered successfully, status updated to Completed',
+            entries: savedEntries
+        });
     } catch (error) {
         console.error('Error entering marks:', error);
         res.status(500).json({ message: 'Error entering marks', error });
     }
 };
+
 
 
 export const uploadMarksSheet = async (req, res) => {
