@@ -7,6 +7,7 @@ import { Staff } from '../models/staffModel.js';
 import { sendAttendanceToParents, sendEmailToHOD } from '../mailtrap/emails.js';
 import os from 'os';
 import { Student } from '../models/studentModel.js';
+import { sendAbsentAttendanceEmailNodemailer, sendAttendanceToParentsNodemailer, sendEmailToHODNodemailer } from '../nodemailer/nodemailerService.js';
 
 // Define __dirname for ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -136,7 +137,7 @@ export const proxyMailToHOD = async (req, res) => {
         };
 
         // Send email to HOD
-        await sendEmailToHOD(data);
+        await sendEmailToHODNodemailer(data);
 
         res.json({ message: 'Email sent successfully', success: true });
     } catch (error) {
@@ -168,31 +169,46 @@ export const checkExcelFile = async (req, res) => {
     }
 };
 
+
+// Utility function to extract number from a string like "Semester 5"
+const extractNumber = (str) => {
+    const match = str.match(/\d+/);
+    return match ? parseInt(match[0]) : null;
+};
+
 export const attendanceMailToParents = async (req, res) => {
     const attendanceData = req.body;
 
     try {
-        let studentsData = [];
-        // Check if the data is an array (multiple students) or a single object
+        let studentsPresent = [];
+
         if (Array.isArray(attendanceData)) {
-            console.log('Received attendance data for multiple students:');
-            studentsData = attendanceData;
+            console.log('✅ Received attendance for multiple students');
+            studentsPresent = attendanceData;
         } else {
-            console.log('Received attendance data for a single student:');
-            studentsData = [attendanceData]; // Convert single object to array for uniform processing
+            console.log('✅ Received attendance for a single student');
+            studentsPresent = [attendanceData];
         }
 
-        // Fetch parent emails for each student
-        const emailDataArray = [];
-        for (const record of studentsData) {
-            const student = await Student.findOne({enrollmentId: record.enrollment}) // Fetch student by ID
-            if (!student || !student.parentsInfo || !student.parentsInfo.fatherEmail) {
-                console.warn(`No parent email found for student ID: ${record.enrollment}`);
-                continue; // Skip if no parent email is found
+        let { division, semester } = studentsPresent[0];
+        division = extractNumber(division);
+        semester = extractNumber(semester);
+        
+        // ✅ Fetch all students of that class (division + semester)
+        const allClassStudents = await Student.find({ division, semester });
+
+        // ✅ Extract enrollment IDs of present students
+        const presentEnrollmentIds = studentsPresent.map(s => s.enrollment);
+
+        // ✅ Process present students
+        for (const record of studentsPresent) {
+            const student = await Student.findOne({ enrollmentId: record.enrollment });
+            if (!student?.parentsInfo?.fatherEmail) {
+                console.warn(`⚠️ No parent email for present student ${record.enrollment}`);
+                continue;
             }
 
-            // Prepare data for email sending
-            emailDataArray.push({
+            await sendAttendanceToParentsNodemailer({
                 student: {
                     fullName: student.fullName,
                     profilePhoto: student.profilePhoto,
@@ -202,9 +218,9 @@ export const attendanceMailToParents = async (req, res) => {
                     semester: student.semester,
                     division: student.division,
                     fatherEmail: student.parentsInfo.fatherEmail,
-                    motherEmail: student.parentsInfo.motherEmail
+                    motherEmail: student.parentsInfo.motherEmail,
                 },
-                other:{
+                other: {
                     facultyFullName: record.attendanceTakenBy,
                     subject: record.subject,
                 },
@@ -215,18 +231,33 @@ export const attendanceMailToParents = async (req, res) => {
             });
         }
 
-        // Send emails to all parents
-        for (const emailData of emailDataArray) {
-            console.log(emailData)
-            await sendAttendanceToParents(emailData);
+        // ✅ Identify and process absent students
+        const absentStudents = allClassStudents.filter(
+            student => !presentEnrollmentIds.includes(student.enrollmentId)
+        );
+
+        for (const student of absentStudents) {
+            if (!student?.parentsInfo?.fatherEmail) {
+                console.warn(`⚠️ No parent email for absent student ${student.enrollmentId}`);
+                continue;
+            }
+
+            await sendAbsentAttendanceEmailNodemailer(student, {
+                date: studentsPresent[0].date,
+                time: studentsPresent[0].time
+            }, {
+                subject: studentsPresent[0].subject,
+                facultyFullName: studentsPresent[0].attendanceTakenBy
+            });
         }
 
-        res.status(200).send("Attendance emails sent successfully to all parents.");
+        res.status(200).send("✅ Attendance emails sent successfully to all parents (present & absent).");
     } catch (error) {
-        console.error("Error in attendanceMailToParents: ", error);
+        console.error("❌ Error in attendanceMailToParents: ", error);
         res.status(500).send("An error occurred while sending attendance emails.");
     }
 };
+
 
 
 

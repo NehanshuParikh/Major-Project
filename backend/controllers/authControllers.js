@@ -2,7 +2,7 @@ import { Staff } from "../models/staffModel.js";
 import { Student } from "../models/studentModel.js";
 import bcrypt from 'bcryptjs';
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
-import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendResetSuccessEmail } from "../mailtrap/emails.js";
+
 import crypto from "crypto";
 import path from "path";
 import { fileURLToPath } from 'url';
@@ -11,6 +11,8 @@ import fs from "fs";
 import owasp from 'owasp-password-strength-test'
 import { uploadOnCloudinary } from '../utils/cloudinary.js'
 import { profile } from "console";
+import { sendVerificationEmailNodemailer, sendWelcomeEmailNodemailer, sendPasswordResetEmailNodemailer, sendResetSuccessEmailNodemailer } from "../nodemailer/nodemailerService.js";
+
 // Create __filename and __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -137,7 +139,7 @@ export const signup = async (req, res) => {
             const token = generateTokenAndSetCookie(res, student._id);
             console.log("Generated Token:", token);
 
-            await sendVerificationEmail(email, verificationToken);
+            await sendVerificationEmailNodemailer(email, verificationToken);
 
             return res.status(201).json({ success: true, message: "Student created / registered Successfully. OTP sent on email for verification.", user: { ...student._doc, password: undefined } });
 
@@ -157,7 +159,7 @@ export const signup = async (req, res) => {
             });
 
             await staff.save();
-            await sendVerificationEmail(email, verificationToken);
+            await sendVerificationEmailNodemailer(email, verificationToken);
 
             return res.status(201).json({ success: true, message: "Staff Member created / registered Successfully. OTP sent on email for verification.", user: { ...staff._doc, password: undefined } });
 
@@ -198,7 +200,7 @@ export const login = async (req, res) => {
         await user.save();
 
         // Send the OTP to user's email
-        await sendVerificationEmail(user.email, verificationToken);
+        await sendVerificationEmailNodemailer(user.email, verificationToken);
 
         return res.status(200).json({ success: true, message: "OTP sent to email for verification" });
 
@@ -251,7 +253,7 @@ export const verifyEmail = async (req, res) => {
 
         console.log('User verified and saved:', user);
 
-        await sendWelcomeEmail(user.email);
+        await sendWelcomeEmailNodemailer(user.email);
         console.log('Welcome email sent to:', user.email);
 
         return res.status(200).json({
@@ -334,7 +336,7 @@ export const forgotPassword = async (req, res) => {
         await user.save();
 
         // Send reset email
-        await sendPasswordResetEmail(user.email, user.userId, `${process.env.CLIENT_URL}/api/auth/reset-password/${resetToken}`);
+        await sendPasswordResetEmailNodemailer(user.email, user.userId, `${process.env.CLIENT_URL}/api/auth/reset-password/${resetToken}`);
         res.status(200).json({ success: true, message: "Reset Email Sent successfully" });
 
     } catch (error) {
@@ -366,7 +368,7 @@ export const resetPassword = async (req, res) => {
         user.resetPasswordTokenExpiresAt = undefined;
         await user.save();
 
-        await sendResetSuccessEmail(user.email);
+        await sendResetSuccessEmailNodemailer(user.email);
         res.status(200).json({ success: true, message: "Password reset successful" });
 
     } catch (error) {

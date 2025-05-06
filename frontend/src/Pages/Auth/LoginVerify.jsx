@@ -24,7 +24,7 @@ const LoginVerify = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ code: otp }), // Assuming 'code' is the correct key for OTP
-        credentials:'include',
+        credentials: 'include',
       });
 
       const data = await response.json();
@@ -39,7 +39,7 @@ const LoginVerify = () => {
         }
       } else {
         setLoading(false) // stopping the loader
-        toast.error(data.message);        
+        toast.error(data.message);
       }
     } catch (error) {
       console.error('Error:', error);
@@ -59,14 +59,20 @@ const LoginVerify = () => {
           value={otp}
           onChange={handleChange}
           maxLength="6"
-          className="mb-4 p-2 border border-gray-300 rounded w-full text-center"
+          className="mb-2 p-2 border border-gray-300 rounded w-full text-center"
         />
+
+        <p className="text-sm text-red-500 mb-4 text-center">
+          📩 We've sent a 6-digit OTP to your email. Please check your <strong>Inbox</strong> or <strong>Spam</strong> folder.
+        </p>
+
         <button
           type="submit"
           className="bg-blue-500 text-white p-2 rounded w-full hover:bg-blue-600"
         >
           Verify
         </button>
+
       </form>
     </div>
   );

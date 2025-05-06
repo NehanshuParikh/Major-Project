@@ -9,6 +9,6 @@ const ENDPOINT = process.env.MAIL_TRAP_ENDPOINT;
 export const mailtrapClient = new MailtrapClient({ endpoint: ENDPOINT, token: TOKEN });
 
 export const sender = {
-    email: "mailtrap@demomailtrap.com",
-    name: "Edu Track System",
+    email: "hello@demomailtrap.com",
+    name: "Demo",
 };
